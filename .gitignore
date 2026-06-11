@@ -1,0 +1,69 @@
+# ==========================================================================
+# DTIS — .gitignore
+# Regra de ouro: dado de paciente NUNCA entra no repositório (LGPD).
+# Ver CLAUDE.md › Restrições e compliance.
+# ==========================================================================
+
+# --- Dados sensíveis e saídas de análise (LGPD — bloqueio crítico) ---------
+# Convenção do agente de dados: dados/PX/ e outputs/PX/ na RAIZ do repo.
+# Ancorado em "/" para não colidir com a pasta do agente agents/dados/.
+/dados/
+/outputs/
+/data/
+*.csv
+*.xlsx
+*.xls
+*.parquet
+*.sav
+*.dta
+# Exports brutos de sistemas da Rede D'Or
+**/tasy_export*
+**/erp_export*
+**/*_prontuario*
+**/*_pacientes*
+
+# --- Credenciais e segredos (nunca versionar) ------------------------------
+.env
+.env.*
+*.pem
+*.key
+*.pfx
+secrets.*
+credentials.*
+**/appsettings.*.json
+
+# --- Python ----------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+.ipynb_checkpoints/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# --- Node / front-end (exports do Lovable: React/TypeScript) ----------------
+node_modules/
+dist/
+build/
+.next/
+*.log
+npm-debug.log*
+
+# --- Sistema operacional / Office ------------------------------------------
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+~$*
+*.tmp
+
+# --- IDE / ferramentas -----------------------------------------------------
+.vscode/
+.idea/
+*.swp
+
+# --- Claude Code (estado local da sessão) ----------------------------------
+.claude/
