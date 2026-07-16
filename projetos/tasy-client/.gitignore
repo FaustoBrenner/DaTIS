@@ -1,0 +1,21 @@
+# Segredos e sessões — nunca commitar
+.env
+.env.*
+conf/storage_state.json
+
+# Saídas de execução
+logs/
+raw/
+out/
+
+# Capturas de discovery (contêm tokens e dados reais)
+discovery/*.json
+*.har
+
+# Python legado
+__pycache__/
+*.pyc
+
+# Node
+node_modules/
+dist/

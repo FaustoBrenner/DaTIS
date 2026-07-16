@@ -1,0 +1,17 @@
+{
+  "job_name": "job_execucao_ITAIM",
+  "date_ref": null, 
+  "common_args": {
+    "fileExportType": "XLS"
+  },
+  "reports": [
+    {
+      "key": "cate_61138",
+      "args": {
+        "IE_TIPO_ATENDIMENTO": "8,7,3",
+        "DT_INICIAL": "@date_ref+1d_T00Z",
+        "DT_FINAL": "@date_ref+1d_T00Z"
+      }
+    }
+  ]
+}

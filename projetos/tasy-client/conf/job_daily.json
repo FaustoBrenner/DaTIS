@@ -1,0 +1,70 @@
+{
+  "job_name": "job_daily",
+  "date_ref": null, 
+  "common_args": {
+    "fileExportType": "XLS",
+    "CD_ESTAB_P": 14
+  },
+  "reports": [
+    {
+      "key": "ps_tracking",
+      "args": {
+        "DT_INICIAL": "@date_ref_T00Z",
+        "DT_FINAL": "@date_ref_T00Z"
+      }
+    },
+    {
+      "key": "cate_3142",
+      "args": {
+        "CD_ESTAB": 14,
+        "DT_INICIAL": "@date_ref_T00Z",
+        "DT_FINAL": "@date_ref_T00Z"
+      }
+    },
+    {
+      "key": "cate_2762",
+      "args": {
+        "DT_INICIAL": "@date_ref_T00Z",
+        "DT_FINAL": "@date_ref_T00Z"
+      }
+    },
+    {
+      "key": "cate_3523",
+      "args": {
+        "DT_INICIAL": "@date_ref_T00Z",
+        "DT_FINAL": "@date_ref+1d_T00Z",
+        "CD_ESTABELECIMENTO":"14"
+      }
+    },
+    {
+      "key": "cate_3136",
+      "args": {
+        "DT_INICIO": "@date_ref_T00Z",
+        "DT_FIM": "@date_ref_T00Z"
+      }
+    },
+    {
+      "key": "cate_4317",
+      "args": {
+        "DT_INICIO": "@date_ref_T00Z",
+        "DT_FINAL": "@date_ref+1d_T00Z",
+        "CD_ESTABELECIMENTO_COR":"14"
+      }
+    },
+    {
+      "key": "cate_4718",
+      "args": {
+        "CD_ESTABELECIMENTO_P": 14,
+        "DT_INICIAL_P": "@date_ref_T00Z",
+        "DT_FINAL_P": "@date_ref_T00Z"
+      }
+    },
+    {
+      "key": "cate_4751",
+      "args": {
+        "DT_INICIAL": "@date_ref_T00Z",
+        "DT_FINAL": "@date_ref+1d_T00Z"
+      }
+    }
+  ]
+}
