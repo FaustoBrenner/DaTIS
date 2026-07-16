@@ -6,14 +6,14 @@
  *
  * Diferenças em relação ao legado:
  *   - autenticação 100% XHR (sem navegador);
- *   - troca de estabelecimento por código (campo `estabelecimento_cd` no job),
- *     em vez de navegação por nome via RPA;
+ *   - troca de estabelecimento por código (`estabelecimento_cd`) ou por nome
+ *     (`estabelecimento_nome` / flag --estab), resolvido via /user/data;
  *   - conversão TSV->CSV/SharePoint saiu do escopo: aqui só gravamos o bruto,
  *     opcionalmente convertido para CSV via --csv.
  *
  * Uso:
  *   TASY_USER=... TASY_PASS=... tsx src/cli/run-job.ts --job conf/job_daily.json
- *   Flags: --catalog <path> --out <dir> --csv --date-ref YYYY-MM-DD
+ *   Flags: --catalog <path> --out <dir> --csv --date-ref YYYY-MM-DD --estab <nome>
  */
 import { readFile, mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
@@ -28,7 +28,9 @@ import { consoleLogger } from "./logger.js";
 interface JobFile {
   job_name: string;
   date_ref?: string | null;
-  /** Código do estabelecimento para troca via performAction (opcional). */
+  /** Nome do estabelecimento (resolvido para código via /user/data). Convenção do legado. */
+  estabelecimento?: string;
+  /** Código do estabelecimento para troca via performAction (alternativa direta ao nome). */
   estabelecimento_cd?: number;
   common_args?: Record<string, unknown>;
   reports: Array<{ key: string; args?: Record<string, unknown> }>;
@@ -52,6 +54,7 @@ async function main(): Promise<number> {
       out: { type: "string", default: "out" },
       csv: { type: "boolean", default: false },
       "date-ref": { type: "string" },
+      estab: { type: "string" },
     },
   });
 
@@ -71,7 +74,12 @@ async function main(): Promise<number> {
   const tasy = new TasyClient({ baseUrl, username: user, password, logger: consoleLogger });
   await tasy.session.ensureAuth();
 
-  if (typeof job.estabelecimento_cd === "number") {
+  // Troca de estabelecimento: nome (flag > job) tem precedência sobre código.
+  const estabNome = values.estab ?? job.estabelecimento;
+  if (estabNome) {
+    const estab = await tasy.establishment.changeByName(estabNome);
+    consoleLogger.info("Estabelecimento alterado por nome", { nome: estab.name, cd: estab.code });
+  } else if (typeof job.estabelecimento_cd === "number") {
     await tasy.establishment.change(job.estabelecimento_cd);
     consoleLogger.info("Estabelecimento alterado", { cd: job.estabelecimento_cd });
   }

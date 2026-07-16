@@ -158,8 +158,11 @@ const tasy = new TasyClient({
 //    (opcionalmente, force o login antecipado:)
 await tasy.session.ensureAuth();
 
-// 2) Troca de estabelecimento (unidade), quando o relatório não recebe CD_ESTAB explícito:
+// 2) Troca de estabelecimento (unidade), quando o relatório não recebe CD_ESTAB explícito.
+//    Por código, ou por nome (resolvido via /user/data — case/acento-insensível):
 await tasy.establishment.change(14);
+// await tasy.establishment.changeByName("SAO LUIZ - UNIDADE MORUMBI");
+// const unidades = await tasy.establishment.list();  // [{ code, name, tradingName }]
 
 // 3) Chamada de serviço genérica a qualquer endpoint /service/*:
 const param = await tasy.session.callService("WParameter", "getParameter", [
@@ -235,6 +238,9 @@ Núcleo. Ver [seção 7](#7-autenticação-e-ciclo-de-sessão) para o ciclo de v
 | Método | Assinatura | Descrição |
 |---|---|---|
 | `change` | `(cdEstabelecimento, isDefault?): Promise<unknown>` | Muda o estabelecimento ativo via `CorSis_FK/performAction` |
+| `list` | `(): Promise<Establishment[]>` | Lista os estabelecimentos disponíveis (via `/user/data`) |
+| `resolve` | `(nomeOuFantasia): Promise<Establishment>` | Resolve nome→código (case/acento-insensível; erra em ambiguidade) |
+| `changeByName` | `(nomeOuFantasia, isDefault?): Promise<Establishment>` | Resolve o nome e troca; retorna o estabelecimento |
 
 ### Funções utilitárias
 | Função | Assinatura | Descrição |
@@ -280,6 +286,13 @@ invalidado no servidor.
 sessão — principalmente `TASYAPPSERVER` (afinidade de load balancer) e `JSESSIONID`. Isso mantém
 todas as requisições da sessão no mesmo app server. Antes do primeiro login, um GET público
 resolve o cookie de afinidade.
+
+**XSRF (endpoints `/user/*`):** o servidor emite o token XSRF num **header de resposta**
+`xsrf-token` (visto na resposta do `/oauth`). A `TasySession` captura esse header em `rawFetch` e,
+nas requisições a `/user/*`, reenvia o valor no header de requisição `crsftoken` — automaticamente,
+sem ação do consumidor. Endpoints `/service/*` e `/public/*` não usam XSRF. O nome `crsftoken`
+(sem o segundo "s") é o do próprio servidor, não um erro de digitação. Sondagem que decifrou o
+mecanismo: `discovery/probe4-xsrf.mjs`.
 
 **Tempos (protocolo TASY):** access token 10 min, refresh token 24h. `expires_in` e
 `refresh_expires` são tratados em **minutos** (`storeTokens`) — unidade **confirmada por
@@ -411,11 +424,17 @@ npx tsx src/cli/run-job.ts --job conf/job_daily.json
 | `--out <dir>` | `out` | Raiz de saída |
 | `--csv` | `false` | Grava também a versão convertida em CSV |
 | `--date-ref <YYYY-MM-DD>` | — | Sobrescreve o `date_ref` do job |
+| `--estab <nome>` | — | Troca de estabelecimento por nome (sobrescreve o `estabelecimento` do job) |
 
-**Fluxo:** autentica → (opcional) troca de estabelecimento pelo `estabelecimento_cd` do job →
+**Fluxo:** autentica → (opcional) troca de estabelecimento — por nome (`--estab` ou campo
+`estabelecimento` do job, resolvido via `/user/data`) ou por código (`estabelecimento_cd`) →
 para cada relatório, gera e grava, com **até 3 tentativas** e backoff exponencial (1s, 2s). Um
 relatório ausente do catálogo ou que esgote as tentativas marca `exitCode = 1`, mas o job segue
 com os demais.
+
+> **Precedência de estabelecimento:** `--estab` (flag) > `estabelecimento` (nome, job) >
+> `estabelecimento_cd` (código, job). Nome ambíguo (casa com mais de uma unidade) aborta o job com
+> a lista de candidatos.
 
 **Saída:** `out/<job_name>/<report_key>/<ano>/<mes>/<file_prefix>_<YYYY-MM-DD>.<ext>` (e `.csv`
 quando `--csv`). Rodar novamente com o mesmo `date_ref` **sobrescreve** o arquivo do dia.
@@ -461,7 +480,8 @@ instant, json}`.
 {
   "job_name": "job_daily",
   "date_ref": null,                       // null => D-1; ou "YYYY-MM-DD"
-  "estabelecimento_cd": 14,               // opcional: troca de estabelecimento
+  "estabelecimento": "SAO LUIZ - UNIDADE MORUMBI", // opcional: troca por nome (via /user/data)
+  "estabelecimento_cd": 14,               // opcional: troca por código (usado se não houver nome)
   "common_args": {                        // aplicados a todos os relatórios
     "fileExportType": "XLS",
     "CD_ESTAB_P": 14
@@ -562,12 +582,6 @@ npx tsx scripts/test-convert.ts
 
 ## 17. Limitações conhecidas
 
-- **Troca de estabelecimento por nome:** o CLI aceita `estabelecimento_cd` (código numérico). O
-  mapeamento nome→código não é resolvido automaticamente (dependeria de `/user/data`, atrás da
-  checagem XSRF ainda não decifrada). Relatórios que recebem `CD_ESTAB` explícito não precisam de
-  troca.
-- **Endpoints `/user/*`** (ex.: troca de perfil) exigem proteção XSRF cujo mecanismo ainda não foi
-  resolvido (não é o header `crsftoken`). Não bloqueia o fluxo de relatórios.
 - **Retry do CLI regenera o relatório:** o laço de retry envolve `generate` inteiro
   (generateReports + download). Se a geração tiver sucesso mas o download falhar, a nova tentativa
   regera o relatório no servidor. Tolerável para o batch noturno; revisitar se virar streaming.
@@ -601,7 +615,7 @@ tasy-client/
 │   │   └── types.ts           # tipos compartilhados
 │   ├── services/
 │   │   ├── reports.ts         # ReportsService + buildSpecs + CatalogFile
-│   │   ├── establishment.ts   # EstablishmentService (performAction)
+│   │   ├── establishment.ts   # EstablishmentService (change/list/resolve/changeByName)
 │   │   └── params.ts          # tokens @date_ref, encodeParam, parseDateRef
 │   ├── convert/
 │   │   └── tsv.ts             # decode UTF-16-BE + tsvToRows/tsvToCsv
@@ -623,16 +637,18 @@ tasy-client/
 
 ## O que pode estar incompleto / precisa de validação externa
 
-- **Validação end-to-end** — nada do rebuild foi executado contra o servidor real ainda. É a
-  pendência P0. Ver [`NEXT_STEPS.md`](./NEXT_STEPS.md).
+- **Validação end-to-end** — ✅ concluída em 2026-07-16 contra o servidor real (smoke de auth,
+  smoke de relatório, job_daily completo 8/8 e job_test com troca por nome). Ver
+  [`NEXT_STEPS.md`](./NEXT_STEPS.md).
 - **Casing `BEARER`** — assumido do cliente legado; RFC 7235 torna o esquema case-insensitive, mas
   não foi reconfirmado contra o servidor após a reescrita.
-- **XSRF de `/user/*`** — mecanismo ainda não decifrado; documentado como pendência, não bloqueia
-  relatórios.
+- **XSRF de `/user/*`** — ✅ decifrado: o servidor emite o token no header de resposta `xsrf-token`
+  (na resposta do `/oauth`) e os `/user/*` exigem que ele volte no header de requisição
+  `crsftoken`. A `TasySession` faz isso automaticamente. Ver `discovery/probe4-xsrf.mjs`.
 - Este documento reflete o estado do código nesta revisão. Mudanças no protocolo do TASY ou no
   catálogo exigem atualização aqui.
 
 **Backlog completo e priorizado:** [`NEXT_STEPS.md`](./NEXT_STEPS.md).
 
-**Próximo passo lógico:** rodar `npm run smoke` na rede corporativa para validar auth + refresh +
-geração de relatório end-to-end (pendência P0).
+**Próximo passo lógico:** cobrir as funções puras com testes unitários (P2) e, se o produto pedir,
+implementar o runner de streaming (§14).

@@ -45,6 +45,7 @@ export type {
 export { ReportsService, buildSpecs } from "./services/reports.js";
 export type { ReportSpec, GeneratedFile, GenerateResult, CatalogFile } from "./services/reports.js";
 export { EstablishmentService } from "./services/establishment.js";
+export type { Establishment } from "./services/establishment.js";
 export { resolveToken, encodeParam, parseDateRef } from "./services/params.js";
 export type { ParamSchema, TasyInstant } from "./services/params.js";
 

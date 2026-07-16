@@ -45,6 +45,13 @@ export class TasySession {
   private readonly jar = new CookieJar();
 
   private tokens: TokenState | null = null;
+  /**
+   * Token XSRF do TASY. O servidor o emite no header de resposta `xsrf-token`
+   * (visto na resposta do /oauth) e os endpoints `/user/*` exigem que ele volte
+   * no header de requisição `crsftoken`. Endpoints `/service/*` e `/public/*`
+   * não usam. Descoberto empiricamente — ver discovery/probe4-xsrf.mjs.
+   */
+  private xsrfToken: string | null = null;
   /** Evita múltiplos logins/refreshes concorrentes. */
   private authInFlight: Promise<void> | null = null;
 
@@ -176,6 +183,9 @@ export class TasySession {
     if (cookie) headers.set("cookie", cookie);
     const res = await this.fetchImpl(url, { ...init, headers });
     this.jar.absorb(res);
+    // O servidor emite o token XSRF neste header (na resposta do /oauth).
+    const xsrf = res.headers.get("xsrf-token");
+    if (xsrf) this.xsrfToken = xsrf;
     return res;
   }
 
@@ -199,6 +209,11 @@ export class TasySession {
       const headers: Record<string, string> = { ...options.headers };
       if (!options.anonymous && this.tokens) {
         headers["authorization"] = `BEARER ${this.tokens.accessToken}`;
+      }
+      // Endpoints /user/* exigem o token XSRF no header `crsftoken`. Anexado
+      // automaticamente quando disponível; não atrapalha os demais endpoints.
+      if (this.needsXsrf(path) && this.xsrfToken && headers["crsftoken"] === undefined) {
+        headers["crsftoken"] = this.xsrfToken;
       }
       let body: string | undefined;
       if (options.body !== undefined && options.body !== null) {
@@ -265,5 +280,19 @@ export class TasySession {
     const path = `/TasyAppServer/resources/files/${encodeURIComponent(fileName)}`;
     const res = await this.request<ArrayBuffer>(path, { method: "GET", binary: true });
     return Buffer.from(res.body);
+  }
+
+  /**
+   * Dados do usuário/sessão autenticados (`/user/data`). Endpoint protegido por
+   * XSRF — resolvido automaticamente via header `crsftoken` capturado no login.
+   */
+  async getUserData<T = unknown>(): Promise<T> {
+    const res = await this.request<T>("/TasyAppServer/resources/user/data", { method: "GET" });
+    return res.body;
+  }
+
+  /** True se o caminho é um endpoint /user/* protegido por XSRF. */
+  private needsXsrf(path: string): boolean {
+    return /\/TasyAppServer\/resources\/user\//.test(path);
   }
 }

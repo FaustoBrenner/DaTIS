@@ -29,10 +29,14 @@ futura (humana ou Claude) retomar sem reconstruir contexto. Referências cruzada
   - `run-job.ts --job conf/job_daily.json --csv` — **8/8 relatórios** salvos (raw + CSV) na
     primeira tentativa, todos com conteúdo real (5 a 1115 linhas).
   - O rebuild está validado ponta a ponta contra o TASY real.
+- **✅ P1 — XSRF de `/user/*` decifrado e troca por nome implementada** (2026-07-16):
+  a `TasySession` captura o header de resposta `xsrf-token` e o reenvia como `crsftoken`;
+  `EstablishmentService` ganhou `list`/`resolve`/`changeByName`; CLI aceita `--estab <nome>` e o
+  campo `estabelecimento` no job. Tudo validado contra o servidor real.
 
-> ⚠️ **Tudo isso está NÃO COMMITADO.** O repositório está no commit inicial
-> (`4f09140 Estrutura inicial do workspace DTIS`) com todo o conteúdo do `tasy-client` untracked.
-> Primeiro passo de qualquer sessão futura: decidir o commit inicial do projeto.
+> **Commitado em 2026-07-16.** O rebuild deixou de ser untracked: commit inicial do projeto
+> (`4555525`) + o trabalho de P1 (XSRF + troca por nome). Dados de saída e segredos seguem fora do
+> versionamento via `.gitignore`.
 
 ---
 
@@ -48,16 +52,18 @@ $env:TASY_PASS = [System.Environment]::GetEnvironmentVariable("TASY_PASS","User"
 $env:TASY_USER = [System.Environment]::GetEnvironmentVariable("TASY_USER","User")
 ```
 
-### P1 — Decifrar o XSRF dos endpoints `/user/*`
-Hoje `/user/*` retorna `401 "request not allowed (XSRF)"`; o header `crsftoken` não satisfaz.
-Hipótese registrada: padrão AngularJS (cookie `XSRF-TOKEN` → header `X-XSRF-TOKEN`). Investigar via
-capturas em `discovery/`. **Desbloqueia:** troca de estabelecimento por nome e demais chamadas
-`/user/*`. Não bloqueia o fluxo de relatórios.
+### ~~P1 — Decifrar o XSRF dos endpoints `/user/*`~~ ✅ CONCLUÍDO (2026-07-16)
+**Mecanismo:** o servidor emite o token XSRF num **header de resposta** `xsrf-token` (na resposta
+do `/oauth`); os `/user/*` exigem que ele volte no **header de requisição** `crsftoken`. Os nomes
+AngularJS padrão (`XSRF-TOKEN`/`X-XSRF-TOKEN`) eram pista falsa — configuração residual do
+`$httpProvider`, não o mecanismo real. A `TasySession` captura e reenvia automaticamente. Sondas:
+`discovery/probe3-xsrf.mjs` (achou o header no bundle) e `probe4-xsrf.mjs` (confirmou 200).
 
-### P1 — Mapeamento estabelecimento nome → código
-Depende do P1 acima (endpoint `/user/data` atrás do XSRF). Hoje o CLI só aceita
-`estabelecimento_cd` numérico. Automatizar o nome→código elimina a necessidade de decorar códigos
-nos jobs.
+### ~~P1 — Mapeamento estabelecimento nome → código~~ ✅ CONCLUÍDO (2026-07-16)
+Com o `/user/data` desbloqueado, `EstablishmentService` ganhou `list()`, `resolve(nome)` e
+`changeByName(nome)` (case/acento-insensível, erro em ambiguidade). O CLI aceita `--estab <nome>` e
+o campo `estabelecimento` no job (convenção herdada do legado Python). Validado contra o real
+(job_test resolveu "Hospital Vila Nova Star" → cd 74).
 
 ### P2 — Runner de streaming (`src/cli/stream-job.ts`)
 Se o produto pedir extração contínua (ex.: um relatório a cada N minutos na mesma auth),
@@ -91,6 +97,6 @@ injetado.
 
 ## Próximo passo lógico único
 
-Com o P0 validado, **commitar o projeto** (decisão do líder — todo o rebuild segue untracked
-sobre o commit inicial do workspace) e então atacar o **P1 (XSRF de `/user/*`)** ou os
-**testes unitários (P2)**, conforme a prioridade do produto.
+Com P0 e P1 concluídos e commitados, o próximo trabalho é **P2 — testes unitários** das funções
+puras (blindam o core sem depender da rede) e, se o produto pedir extração contínua, o **runner de
+streaming** (`documentation.md` §14).
