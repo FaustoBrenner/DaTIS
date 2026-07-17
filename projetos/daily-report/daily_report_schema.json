@@ -1,0 +1,30 @@
+{
+    "unidade":{"type": "string"},
+    "id_unidade":{"type": "integer"},
+    
+    "cirurgias":{"type": ["number", "null"]},
+    "cirurgias_previstas":{"type": ["number", "null"]},
+    "tx_confirmacao_agenda_cirurgica":{"type": ["number", "null"]},
+    
+    "pac_dia_uni":{"type": ["number", "null"]},
+    "leitos_uni":{"type": ["number", "null"]},
+    "tx_ocupacao_uni":{"type": ["number", "null"]},
+
+    "pac_dia_uti":{"type": ["number", "null"]},
+    "leitos_uti":{"type": ["number", "null"]},
+    "tx_ocupacao_uti":{"type": ["number", "null"]},
+
+    "atendimentos_ps":{"type": ["number", "null"]},
+    "internacoes_ps":{"type": ["number", "null"]},
+    "tx_internacao":{"type": ["number", "null"]},
+
+    "atendimentos_cemed":{"type": ["number", "null"]},
+    "atendimentos_cemed_previstos":{"type": ["number", "null"]},
+    "tx_confirmacao_agenda_cemed":{"type": ["number", "null"]},
+
+    "cirurgias_frcst":{"type": ["number", "null"]},
+    "pac_dia_uni_frcst":{"type": ["number", "null"]},
+    "pac_dia_uti_frcst":{"type": ["number", "null"]},
+    "atendimentos_ps_frcst":{"type": ["number", "null"]},
+    "atendimentos_cemed_frcst":{"type": ["number", "null"]}
+}

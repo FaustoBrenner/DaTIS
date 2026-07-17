@@ -1,0 +1,198 @@
+[
+  {
+    "setor": "1º Andar - Bloco B - IT",
+    "id_setor": 3240,
+    "grupo_setor": "Unidades de Internação",
+    "id_grupo_setor": 3,
+    "leitos_capacidade": 0
+  },
+  {
+    "setor": "4º Andar - Bloco A - IT",
+    "id_setor": 45,
+    "grupo_setor": "Unidades de Internação",
+    "id_grupo_setor": 3,
+    "leitos_capacidade": 15
+  },
+  {
+    "setor": "5º Andar - Bloco A - IT",
+    "id_setor": 3015,
+    "grupo_setor": "Unidades de Internação",
+    "id_grupo_setor": 3,
+    "leitos_capacidade": 15
+  },
+  {
+    "setor": "1 Andar do Hospital - IT",
+    "id_setor": 4,
+    "grupo_setor": "Unidades de Internação",
+    "id_grupo_setor": 3,
+    "leitos_capacidade": 14
+  },
+  {
+    "setor": "2 Andar do Hospital - IT",
+    "id_setor": 14,
+    "grupo_setor": "Unidades de Internação",
+    "id_grupo_setor": 3,
+    "leitos_capacidade": 14
+  },
+  {
+    "setor": "3 Andar do Hospital - IT",
+    "id_setor": 27,
+    "grupo_setor": "Unidades de Internação",
+    "id_grupo_setor": 3,
+    "leitos_capacidade": 14
+  },
+  {
+    "setor": "5 Andar do Hospital - IT",
+    "id_setor": 2404,
+    "grupo_setor": "Unidades de Internação",
+    "id_grupo_setor": 3,
+    "leitos_capacidade": 14
+  },
+  {
+    "setor": "2º Andar Hospital UI",
+    "id_setor": 0,
+    "grupo_setor": "Descontinuado",
+    "id_grupo_setor": 0,
+    "leitos_capacidade": 0
+  },
+  {
+    "setor": "6º Andar - Bloco A - IT",
+    "id_setor": 3217,
+    "grupo_setor": "Unidades de Internação",
+    "id_grupo_setor": 3,
+    "leitos_capacidade": 14
+  },
+  {
+    "setor": "1 Andar do Pronto Socorro - IT",
+    "id_setor": 8,
+    "grupo_setor": "Unidades de Internação",
+    "id_grupo_setor": 3,
+    "leitos_capacidade": 13
+  },
+  {
+    "setor": "2 Andar do Pronto Socorro - IT",
+    "id_setor": 103,
+    "grupo_setor": "Unidades de Internação",
+    "id_grupo_setor": 3,
+    "leitos_capacidade": 13
+  },
+  {
+    "setor": "3 Andar do Pronto Socorro - IT",
+    "id_setor": 17,
+    "grupo_setor": "Unidades de Internação",
+    "id_grupo_setor": 3,
+    "leitos_capacidade": 13
+  },
+  {
+    "setor": "3º Andar - Bloco A - IT",
+    "id_setor": 3032,
+    "grupo_setor": "Unidades de Internação",
+    "id_grupo_setor": 3,
+    "leitos_capacidade": 13
+  },
+  {
+    "setor": "1 Andar do Centro de Diagnósticos - IT",
+    "id_setor": 11,
+    "grupo_setor": "Unidades de Internação",
+    "id_grupo_setor": 3,
+    "leitos_capacidade": 10
+  },
+  {
+    "setor": "2 Andar do Centro de Diagnósticos - IT",
+    "id_setor": 20,
+    "grupo_setor": "Unidades de Internação",
+    "id_grupo_setor": 3,
+    "leitos_capacidade": 10
+  },
+  {
+    "setor": "3 Andar do Centro de Diagnostico - IT",
+    "id_setor": 23,
+    "grupo_setor": "Unidades de Internação",
+    "id_grupo_setor": 3,
+    "leitos_capacidade": 10
+  },
+  {
+    "setor": "6 Andar da Maternidade Anexa ( Semi intensiva) - IT",
+    "id_setor": 0,
+    "grupo_setor": "Descontinuado",
+    "id_grupo_setor": 0,
+    "leitos_capacidade": 0
+  },
+  {
+    "setor": "5 Andar do Centro de Diagnósticos - IT",
+    "id_setor": 51,
+    "grupo_setor": "Unidades de Internação",
+    "id_grupo_setor": 3,
+    "leitos_capacidade": 10
+  },
+  {
+    "setor": "6 Andar do Centro de Diagnósticos - IT",
+    "id_setor": 57,
+    "grupo_setor": "Unidades de Internação",
+    "id_grupo_setor": 3,
+    "leitos_capacidade": 10
+  },
+  {
+    "setor": "7 Andar do Centro de Diagnósticos - IT",
+    "id_setor": 67,
+    "grupo_setor": "Unidades de Internação",
+    "id_grupo_setor": 3,
+    "leitos_capacidade": 10
+  },
+  {
+    "setor": "Mezanino - IT - Piso Intermediário",
+    "id_setor": 128,
+    "grupo_setor": "Unidades de Internação",
+    "id_grupo_setor": 3,
+    "leitos_capacidade": 9
+  },
+  {
+    "setor": "UTI Adulto 1 - Piso Intermediário - IT",
+    "id_setor": 131,
+    "grupo_setor": "Unidade de terapia intensiva",
+    "id_grupo_setor": 4,
+    "leitos_capacidade": 20
+  },
+  {
+    "setor": "UTI Adulto 2 - Piso Intermediário - IT",
+    "id_setor": 1724,
+    "grupo_setor": "Unidade de terapia intensiva",
+    "id_grupo_setor": 4,
+    "leitos_capacidade": 10
+  },
+  {
+    "setor": "UTI Adulto 3 - 2° andar Bloco G - IT",
+    "id_setor": 1469,
+    "grupo_setor": "Unidade de terapia intensiva",
+    "id_grupo_setor": 4,
+    "leitos_capacidade": 16
+  },
+  {
+    "setor": "UTI Adulto 4 - 4° andar Bloco C - IT",
+    "id_setor": 42,
+    "grupo_setor": "Unidade de terapia intensiva",
+    "id_grupo_setor": 4,
+    "leitos_capacidade": 11
+  },
+  {
+    "setor": "UTI Adulto 5 - 4° andar CD - IT",
+    "id_setor": 2178,
+    "grupo_setor": "Unidade de terapia intensiva",
+    "id_grupo_setor": 4,
+    "leitos_capacidade": 10
+  },
+  {
+    "setor": "UTI Adulto 6 -  6º Andar Hospital - IT",
+    "id_setor": 3172,
+    "grupo_setor": "Unidade de terapia intensiva",
+    "id_grupo_setor": 4,
+    "leitos_capacidade": 12
+  },
+  {
+    "setor": "UTI Adulto 7 - 1º Andar Hosp. - IT",
+    "id_setor": 3533,
+    "grupo_setor": "Unidade de terapia intensiva",
+    "id_grupo_setor": 4,
+    "leitos_capacidade": 12
+  }
+]

@@ -1,0 +1,9 @@
+node_modules/
+dist/
+
+# Extrações brutas do TASY e histórico contêm dados operacionais/PHI — nunca versionar.
+data/sample_data/
+data/history/
+data/*.xlsx
+
+# A referência de setores já vive como JSON em src/ref/ (sem PHI); o xlsx bruto fica de fora.

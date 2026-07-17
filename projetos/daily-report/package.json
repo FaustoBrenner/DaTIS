@@ -1,0 +1,22 @@
+{
+  "name": "daily-report",
+  "version": "0.1.0",
+  "description": "Processamento dos relatórios do TASY em KPIs do report diário da Regional Sudoeste (DTIS). Parsers + cálculo determinístico dos KPIs por unidade.",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "report": "tsx src/cli/build-report.ts"
+  },
+  "dependencies": {
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.7.4",
+    "tsx": "^4.19.1",
+    "typescript": "^5.6.2"
+  }
+}
