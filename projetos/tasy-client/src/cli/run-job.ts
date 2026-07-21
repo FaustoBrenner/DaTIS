@@ -22,7 +22,7 @@ import { parseArgs } from "node:util";
 import { TasyClient } from "../index.js";
 import { buildSpecs, type CatalogFile, type ReportSpec } from "../services/reports.js";
 import { parseDateRef } from "../services/params.js";
-import { tsvToCsv } from "../convert/tsv.js";
+import { tsvToCsv, type TsvRecord } from "../convert/tsv.js";
 import { consoleLogger } from "./logger.js";
 
 interface JobFile {
@@ -53,6 +53,7 @@ async function main(): Promise<number> {
       job: { type: "string" },
       out: { type: "string", default: "out" },
       csv: { type: "boolean", default: false },
+      json: { type: "boolean", default: false },
       "date-ref": { type: "string" },
       estab: { type: "string" },
     },
@@ -98,10 +99,20 @@ async function main(): Promise<number> {
     let lastErr: unknown;
     for (let attempt = 1; attempt <= 3 && !ok; attempt++) {
       try {
-        const result = await tasy.reports.generate(spec, args, dateRef);
-        for (const file of result.files) {
-          const paths = await writeOutput(values.out!, job.job_name, spec, dateRef, file.content, values.csv!);
-          consoleLogger.info("Relatório salvo", { key: jr.key, attempt, paths });
+        if (values.json) {
+          // Modo JSON: grava as linhas já parseadas (formato padrão da lib).
+          const result = await tasy.reports.generate(spec, args, dateRef);
+          for (const file of result.files) {
+            const path = await writeJson(values.out!, job.job_name, spec, dateRef, file.rows);
+            consoleLogger.info("Relatório salvo", { key: jr.key, attempt, linhas: file.rows.length, path });
+          }
+        } else {
+          // Modo bruto: grava os bytes em disco (e opcionalmente CSV).
+          const result = await tasy.reports.generate(spec, args, dateRef, { raw: true });
+          for (const file of result.files) {
+            const paths = await writeOutput(values.out!, job.job_name, spec, dateRef, file.content, values.csv!);
+            consoleLogger.info("Relatório salvo", { key: jr.key, attempt, paths });
+          }
         }
         ok = true;
       } catch (err) {
@@ -145,6 +156,24 @@ async function writeOutput(
     written.push(csvPath);
   }
   return written;
+}
+
+/** Grava as linhas JSON em out/<job>/<key>/<ano>/<mes>/<prefixo>_<data>.json. */
+async function writeJson(
+  outRoot: string,
+  jobName: string,
+  spec: ReportSpec,
+  dateRef: Date,
+  rows: TsvRecord[],
+): Promise<string> {
+  const year = String(dateRef.getUTCFullYear());
+  const month = String(dateRef.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(dateRef.getUTCDate()).padStart(2, "0");
+  const dir = join(outRoot, jobName, spec.key, year, month);
+  await mkdir(dir, { recursive: true });
+  const path = join(dir, `${spec.filePrefix}_${year}-${month}-${day}.json`);
+  await writeFile(path, JSON.stringify(rows, null, 2), "utf8");
+  return path;
 }
 
 function sleep(ms: number): Promise<void> {

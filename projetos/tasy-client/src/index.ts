@@ -8,7 +8,10 @@
  *   await tasy.session.ensureAuth();
  *   await tasy.establishment.change(68);
  *   const result = await tasy.reports.generate(spec, args, dateRef);
- *   // result.files[0].content é um Buffer — persista como quiser.
+ *   // result.files[0].rows é um array de objetos (linhas JSON). Para os bytes
+ *   // brutos (Buffer), gere com { raw: true }:
+ *   //   const raw = await tasy.reports.generate(spec, args, dateRef, { raw: true });
+ *   //   raw.files[0].content é um Buffer.
  */
 import { TasySession } from "./core/session.js";
 import { ReportsService } from "./services/reports.js";
@@ -43,11 +46,20 @@ export type {
 
 // Serviços
 export { ReportsService, buildSpecs } from "./services/reports.js";
-export type { ReportSpec, GeneratedFile, GenerateResult, CatalogFile } from "./services/reports.js";
+export type {
+  ReportSpec,
+  GeneratedFile,
+  GeneratedRawFile,
+  GenerateResult,
+  GenerateRawResult,
+  GenerateOptions,
+  CatalogFile,
+} from "./services/reports.js";
 export { EstablishmentService } from "./services/establishment.js";
 export type { Establishment } from "./services/establishment.js";
 export { resolveToken, encodeParam, parseDateRef } from "./services/params.js";
 export type { ParamSchema, TasyInstant } from "./services/params.js";
 
 // Conversão (utilitário opcional)
-export { decodeTasyText, tsvToRows, tsvToCsv } from "./convert/tsv.js";
+export { decodeTasyText, tsvToRows, tsvToRecords, tsvToCsv, coerceCell } from "./convert/tsv.js";
+export type { TsvRecord, TsvValue, ColumnType, ColumnSchema, ColumnsSchema } from "./convert/tsv.js";

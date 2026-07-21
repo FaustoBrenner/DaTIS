@@ -41,6 +41,102 @@ export function tsvToRows(buf: Buffer): string[][] {
     .map((line) => line.split("\t"));
 }
 
+/** Tipos de coluna suportados na tipagem de saída (columns_schema do catálogo). */
+export type ColumnType = "string" | "int" | "date" | "instant" | "duration";
+
+/** Schema de uma coluna de saída. */
+export interface ColumnSchema {
+  type: ColumnType;
+}
+
+/** Mapa nome-da-coluna -> schema. Colunas ausentes assumem `string`. */
+export type ColumnsSchema = Record<string, ColumnSchema>;
+
+/** Valor de célula após coerção: string crua, número, ou null (vazio tipado). */
+export type TsvValue = string | number | null;
+
+/** Uma linha do relatório como objeto indexado pelo cabeçalho. */
+export type TsvRecord = Record<string, TsvValue>;
+
+// São Paulo é UTC-3 fixo (sem horário de verão desde 2019). Mesma convenção de params.ts.
+const SP_UTC_OFFSET_MS = 3 * 60 * 60 * 1000;
+
+const RE_INT = /^-?\d+$/;
+const RE_DATE = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+const RE_DATETIME = /^(\d{2})\/(\d{2})\/(\d{4})\s+(\d{2}):(\d{2})(?::(\d{2}))?$/;
+const RE_DURATION = /^(\d+):(\d{2})(?::(\d{2}))?$/;
+
+/**
+ * Aplica o tipo declarado a uma célula crua (já trimada). Coerção **leniente**:
+ * se o valor não casar com o formato esperado, devolve a string crua (não lança).
+ * Vazio -> null para tipos não-string; "" para `string`.
+ *
+ *   int      -> number
+ *   date     -> "YYYY-MM-DD"
+ *   instant  -> ISO 8601 UTC ("...Z"), assumindo hora local São Paulo (UTC-3)
+ *   duration -> minutos totais (h*60 + m + s/60)
+ */
+export function coerceCell(raw: string, type: ColumnType): TsvValue {
+  if (type === "string") return raw;
+  if (raw === "") return null;
+
+  switch (type) {
+    case "int": {
+      if (!RE_INT.test(raw)) return raw;
+      const n = Number(raw);
+      return Number.isFinite(n) ? n : raw;
+    }
+    case "date": {
+      const m = RE_DATE.exec(raw);
+      if (!m) return raw;
+      const [, dd, mo, yyyy] = m;
+      return `${yyyy}-${mo}-${dd}`;
+    }
+    case "instant": {
+      const m = RE_DATETIME.exec(raw);
+      if (!m) return raw;
+      const [, dd, mo, yyyy, hh, mi, ss] = m;
+      const utcMs =
+        Date.UTC(+yyyy!, +mo! - 1, +dd!, +hh!, +mi!, ss ? +ss : 0) + SP_UTC_OFFSET_MS;
+      const d = new Date(utcMs);
+      return Number.isNaN(d.getTime()) ? raw : d.toISOString();
+    }
+    case "duration": {
+      const m = RE_DURATION.exec(raw);
+      if (!m) return raw;
+      const [, hh, mi, ss] = m;
+      return +hh! * 60 + +mi! + (ss ? +ss / 60 : 0);
+    }
+    default:
+      return raw;
+  }
+}
+
+/**
+ * Converte o buffer TSV do TASY em lista de objetos (formato JSON padrão da lib),
+ * usando a 1ª linha como cabeçalho.
+ *
+ * Sem `schema`: valores permanecem string crua (com trim). Com `schema`: cada
+ * célula é coagida ao tipo declarado (`coerceCell`); coluna ausente do schema
+ * assume `string`. A tipagem é leniente — valores fora do formato viram string.
+ *
+ * Observação: o parser é tabular e assume que o "xls" do TASY é de fato TSV. Para
+ * exportações não tabulares (ex.: PDF/binário), use o retorno bruto (opção `raw`).
+ */
+export function tsvToRecords(buf: Buffer, schema?: ColumnsSchema): TsvRecord[] {
+  const rows = tsvToRows(buf);
+  if (rows.length === 0) return [];
+  const header = rows[0]!.map((h) => h.trim());
+  return rows.slice(1).map((cells) => {
+    const record: TsvRecord = {};
+    header.forEach((col, i) => {
+      const raw = (cells[i] ?? "").trim();
+      record[col] = schema ? coerceCell(raw, schema[col]?.type ?? "string") : raw;
+    });
+    return record;
+  });
+}
+
 /** Escapa um campo para CSV conforme RFC 4180 quando necessário. */
 function csvField(value: string, delimiter: string): string {
   if (value.includes(delimiter) || value.includes('"') || value.includes("\n") || value.includes("\r")) {

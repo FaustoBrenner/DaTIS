@@ -2,7 +2,6 @@
   "base_url": "http://hismorumbi.rededor.corp",
   "login_url": "/",
   "generate_url": "/TasyAppServer/resources/service/Report/generateReports",
-
   "reports": [
     {
       "key": "ps_tracking",
@@ -13,65 +12,187 @@
       "assunto": "tempos pronto socorro",
       "perfil": null,
       "params_schema": {
-        "fileExportType": { "type": "string", "required": true, "allowed": ["XLS", "CSV", "PDF"] },
-        "CD_ESTAB_P":     { "type": "int",    "required": true },
-        "DT_INICIAL":     { "type": "instant","required": false },
-        "DT_FINAL":       { "type": "instant","required": false }
+        "fileExportType": {
+          "type": "string",
+          "required": true,
+          "allowed": [
+            "XLS",
+            "CSV",
+            "PDF"
+          ]
+        },
+        "CD_ESTAB_P": {
+          "type": "int",
+          "required": true
+        },
+        "DT_INICIAL": {
+          "type": "instant",
+          "required": false
+        },
+        "DT_FINAL": {
+          "type": "instant",
+          "required": false
+        }
       },
-      "outputs": { "file_prefix": "PS", "ext": "xls" },
-      "columns": [
-        "Nr atendimento",
-        "Nm pessoa fisica",
-        "Crm",
-        "Médico",
-        "Clinica",
-        "Ds convenio",
-        "Dt entrada",
-        "Setor",
-        "Senha",
-        "Ds triagem",
-        "Dt alta",
-        "Ds triagem prioridade",
-        "Dt inicio atendimento",
-        "Dt fim triagem",
-        "Fim enf",
-        "Inicio",
-        "Dt atend medico",
-        "Dt fim consulta",
-        "Min ret sen",
-        "Triagem",
-        "Espera",
-        "Desfecho",
-        "Enfermagem",
-        "Consulta",
-        "Tempo total",
-        "Dados prescr",
-        "Retir medic",
-        "Dt hr adm medic",
-        "Hr adm medic",
-        "Tpo ret med",
-        "Tpo desf",
-        "Tpo ad medic",
-        "Reg reaval",
-        "Inicio r",
-        "Fim r",
-        "Espera reaval",
-        "Tempo reaval",
-        "Prescr",
-        "Local",
-        "Hr lib medico int",
-        "Hr lib medico",
-        "Tempo entrada desf",
-        "Hr internacao",
-        "Hr entrada intern",
-        "Ds senha qmatic",
-        "Dt aloc leito",
-        "Ds unidade",
-        "Sexo",
-        "Idade",
-        "Recepção",
-        "Recepção - Chamada da Fila"
-      ]
+      "outputs": {
+        "file_prefix": "PS",
+        "ext": "xls"
+      },
+      "columns_schema": {
+        "Nr atendimento": {
+          "type": "string"
+        },
+        "Nm pessoa fisica": {
+          "type": "string"
+        },
+        "Crm": {
+          "type": "string"
+        },
+        "Médico": {
+          "type": "string"
+        },
+        "Clinica": {
+          "type": "string"
+        },
+        "Ds convenio": {
+          "type": "string"
+        },
+        "Dt entrada": {
+          "type": "instant"
+        },
+        "Setor": {
+          "type": "string"
+        },
+        "Senha": {
+          "type": "instant"
+        },
+        "Ds triagem": {
+          "type": "string"
+        },
+        "Dt alta": {
+          "type": "instant"
+        },
+        "Ds triagem prioridade": {
+          "type": "string"
+        },
+        "Dt inicio atendimento": {
+          "type": "string"
+        },
+        "Dt fim triagem": {
+          "type": "string"
+        },
+        "Fim enf": {
+          "type": "int"
+        },
+        "Inicio": {
+          "type": "int"
+        },
+        "Dt atend medico": {
+          "type": "instant"
+        },
+        "Dt fim consulta": {
+          "type": "instant"
+        },
+        "Min ret sen": {
+          "type": "int"
+        },
+        "Triagem": {
+          "type": "int"
+        },
+        "Espera": {
+          "type": "int"
+        },
+        "Desfecho": {
+          "type": "instant"
+        },
+        "Enfermagem": {
+          "type": "int"
+        },
+        "Consulta": {
+          "type": "int"
+        },
+        "Tempo total": {
+          "type": "int"
+        },
+        "Dados prescr": {
+          "type": "instant"
+        },
+        "Retir medic": {
+          "type": "instant"
+        },
+        "Dt hr adm medic": {
+          "type": "instant"
+        },
+        "Hr adm medic": {
+          "type": "duration"
+        },
+        "Tpo ret med": {
+          "type": "int"
+        },
+        "Tpo desf": {
+          "type": "int"
+        },
+        "Tpo ad medic": {
+          "type": "int"
+        },
+        "Reg reaval": {
+          "type": "string"
+        },
+        "Inicio r": {
+          "type": "string"
+        },
+        "Fim r": {
+          "type": "string"
+        },
+        "Espera reaval": {
+          "type": "int"
+        },
+        "Tempo reaval": {
+          "type": "int"
+        },
+        "Prescr": {
+          "type": "string"
+        },
+        "Local": {
+          "type": "string"
+        },
+        "Hr lib medico int": {
+          "type": "instant"
+        },
+        "Hr lib medico": {
+          "type": "instant"
+        },
+        "Tempo entrada desf": {
+          "type": "int"
+        },
+        "Hr internacao": {
+          "type": "int"
+        },
+        "Hr entrada intern": {
+          "type": "int"
+        },
+        "Ds senha qmatic": {
+          "type": "string"
+        },
+        "Dt aloc leito": {
+          "type": "instant"
+        },
+        "Ds unidade": {
+          "type": "string"
+        },
+        "Sexo": {
+          "type": "string"
+        },
+        "Idade": {
+          "type": "int"
+        },
+        "Recepção": {
+          "type": "string"
+        },
+        "Recepção - Chamada da Fila": {
+          "type": "string"
+        }
+      }
     },
     {
       "key": "cfat_4402",
@@ -82,16 +203,33 @@
       "assunto": "repasse_terceiros",
       "perfil": 1898,
       "params_schema": {
-        "fileExportType":         {"type": "string", "required": false, "allowed": ["CSV", "PDF","XLS"]},
-        "DT_FINAL":               {"type": "instant","required": true},
-        "_nrSeqSchematicsFeature":{"type": "int","required": false},
-        "DT_INICIAL":             {"type": "instant","required": true}
+        "fileExportType": {
+          "type": "string",
+          "required": false,
+          "allowed": [
+            "CSV",
+            "PDF",
+            "XLS"
+          ]
+        },
+        "DT_FINAL": {
+          "type": "instant",
+          "required": true
+        },
+        "_nrSeqSchematicsFeature": {
+          "type": "int",
+          "required": false
+        },
+        "DT_INICIAL": {
+          "type": "instant",
+          "required": true
+        }
       },
       "outputs": {
         "file_prefix": "RDSL_REPASSE_TERCEIROS",
         "ext": "xls"
       },
-      "columns": []
+      "columns_schema": {}
     },
     {
       "key": "cate_3142",
@@ -102,34 +240,80 @@
       "assunto": "desfecho_internacao",
       "perfil": null,
       "params_schema": {
-          "DT_FINAL":                 {"type": "instant","required": true},
-          "_nrSeqSchematicsFeature":  {"type": "int","required": false},
-          "DT_INICIAL":               {"type": "instant","required": true},
-          "CD_ESTAB":                 {"type": "int",    "required": true }
+        "DT_FINAL": {
+          "type": "instant",
+          "required": true
+        },
+        "_nrSeqSchematicsFeature": {
+          "type": "int",
+          "required": false
+        },
+        "DT_INICIAL": {
+          "type": "instant",
+          "required": true
+        },
+        "CD_ESTAB": {
+          "type": "int",
+          "required": true
+        }
       },
       "outputs": {
         "file_prefix": "HMSL_DESFECHO_INTERNACAO_PA",
         "ext": "xls"
       },
-      "columns": [
-        "Nm medico atend",
-        "Nr atend",
-        "Ds convenio",
-        "Ds categoria",
-        "Nm paciente",
-        "Dt desfecho",
-        "Cid principal",
-        "Cid descricao",
-        "Ds clinica",
-        "Dt entrada",
-        "Ds medico evol",
-        "Ds medico desfecho",
-        "Ds unidade",
-        "Dt alocacao",
-        "Ds acomodacao",
-        "Cd procedimento",
-        "Ds procedimento"
-      ]
+      "columns_schema": {
+        "Nm medico atend": {
+          "type": "string"
+        },
+        "Nr atend": {
+          "type": "string"
+        },
+        "Ds convenio": {
+          "type": "string"
+        },
+        "Ds categoria": {
+          "type": "string"
+        },
+        "Nm paciente": {
+          "type": "string"
+        },
+        "Dt desfecho": {
+          "type": "date"
+        },
+        "Cid principal": {
+          "type": "string"
+        },
+        "Cid descricao": {
+          "type": "string"
+        },
+        "Ds clinica": {
+          "type": "string"
+        },
+        "Dt entrada": {
+          "type": "date"
+        },
+        "Ds medico evol": {
+          "type": "string"
+        },
+        "Ds medico desfecho": {
+          "type": "string"
+        },
+        "Ds unidade": {
+          "type": "string"
+        },
+        "Dt alocacao": {
+          "type": "date"
+        },
+        "Ds acomodacao": {
+          "type": "string"
+        },
+        "Cd procedimento": {
+          "type": "string"
+        },
+        "Ds procedimento": {
+          "type": "string"
+        }
+      }
     },
     {
       "key": "cate_2762",
@@ -140,29 +324,64 @@
       "assunto": "encaminhamento",
       "perfil": null,
       "params_schema": {
-          "DT_FINAL": {"type": "instant","required": true},
-          "_nrSeqSchematicsFeature": {"type": "int","required": false},
-          "DT_INICIAL": {"type": "instant","required": true}
+        "DT_FINAL": {
+          "type": "instant",
+          "required": true
+        },
+        "_nrSeqSchematicsFeature": {
+          "type": "int",
+          "required": false
+        },
+        "DT_INICIAL": {
+          "type": "instant",
+          "required": true
+        }
       },
       "outputs": {
         "file_prefix": "RDSL_ENCAMINHAMENTO_CEMED",
         "ext": "xls"
       },
-      "columns": [
-        "Paciente",
-        "Nr atendimento",
-        "Nome medico",
-        "Especialidade",
-        "Ds setor",
-        "DS_CLINICA",
-        "Dt entrada",
-        "Esp encaminha",
-        "Dt registro",
-        "Convenio",
-        "Telefone",
-        "Dt nascimento",
-        "Nr cpf"
-      ]
+      "columns_schema": {
+        "Paciente": {
+          "type": "string"
+        },
+        "Nr atendimento": {
+          "type": "string"
+        },
+        "Nome medico": {
+          "type": "string"
+        },
+        "Especialidade": {
+          "type": "string"
+        },
+        "Ds setor": {
+          "type": "string"
+        },
+        "DS_CLINICA": {
+          "type": "string"
+        },
+        "Dt entrada": {
+          "type": "date"
+        },
+        "Esp encaminha": {
+          "type": "string"
+        },
+        "Dt registro": {
+          "type": "string"
+        },
+        "Convenio": {
+          "type": "string"
+        },
+        "Telefone": {
+          "type": "string"
+        },
+        "Dt nascimento": {
+          "type": "date"
+        },
+        "Nr cpf": {
+          "type": "string"
+        }
+      }
     },
     {
       "key": "cate_3523",
@@ -173,28 +392,62 @@
       "assunto": "tracking",
       "perfil": null,
       "params_schema": {
-          "DT_FINAL":                 {"type": "instant","required": true},
-          "_nrSeqSchematicsFeature":  {"type": "int","required": false},
-          "DT_INICIAL":               {"type": "instant","required": true},
-          "CD_ESTABELECIMENTO":       {"type": "int",    "required": true }
+        "DT_FINAL": {
+          "type": "instant",
+          "required": true
+        },
+        "_nrSeqSchematicsFeature": {
+          "type": "int",
+          "required": false
+        },
+        "DT_INICIAL": {
+          "type": "instant",
+          "required": true
+        },
+        "CD_ESTABELECIMENTO": {
+          "type": "int",
+          "required": true
+        }
       },
       "outputs": {
         "file_prefix": "HSL_CEMED",
         "ext": "xls"
       },
-      "columns": [
-        "Atendimento",
-        "Tipo Atendimento",
-        "Paciente",
-        "Sexo",
-        "Data Nasc.",
-        "Idade",
-        "Especialidade",
-        "CRM",
-        "Médico",
-        "Data Entrada",
-        "Convenio"
-      ]
+      "columns_schema": {
+        "Atendimento": {
+          "type": "string"
+        },
+        "Tipo Atendimento": {
+          "type": "string"
+        },
+        "Paciente": {
+          "type": "string"
+        },
+        "Sexo": {
+          "type": "string"
+        },
+        "Data Nasc.": {
+          "type": "date"
+        },
+        "Idade": {
+          "type": "string"
+        },
+        "Especialidade": {
+          "type": "string"
+        },
+        "CRM": {
+          "type": "string"
+        },
+        "Médico": {
+          "type": "string"
+        },
+        "Data Entrada": {
+          "type": "date"
+        },
+        "Convenio": {
+          "type": "string"
+        }
+      }
     },
     {
       "key": "cate_3136",
@@ -205,59 +458,154 @@
       "assunto": "cirurgias",
       "perfil": null,
       "params_schema": {
-          "_nrSeqSchematicsFeature":  {"type": "int","required": false},
-          "DT_INICIO":                {"type": "instant","required": true},
-          "DT_FIM":                   {"type": "instant","required": true}
+        "_nrSeqSchematicsFeature": {
+          "type": "int",
+          "required": false
+        },
+        "DT_INICIO": {
+          "type": "instant",
+          "required": true
+        },
+        "DT_FIM": {
+          "type": "instant",
+          "required": true
+        }
       },
       "outputs": {
         "file_prefix": "RDSL_CIRURGIAS_REALIZADAS",
         "ext": "xls"
       },
-      "columns": [
-        "Nr atendimento",
-        "Dt Internacao",
-        "Dt alta",
-        "Nm paciente",
-        "Dt nascimento",
-        "Idade",
-        "Sexo",
-        "Ds email",
-        "Nr telefone",
-        "Nr prescricao",
-        "Nr cirurgia",
-        "Ds tipo cirurgia",
-        "Porte",
-        "COD. TUSS",
-        "Ds procedimento",
-        "Proced adicional",
-        "Início previsto",
-        "Dt cirurgia",
-        "Dt termino",
-        "Nm cirurgiao",
-        "Duração Prevista",
-        "Duração Real",
-        "Ds especialidade cirurgiao",
-        "Nm anestesista",
-        "Vinculo Anest",
-        "Tipo Anestesia",
-        "Asa",
-        "Cid doenca",
-        "Ds cid",
-        "Cid definitivo",
-        "Ds cid def",
-        "Tipo Posição",
-        "Superfície de Suporte",
-        "Posição Membros",
-        "Pontuação Elpo",
-        "Carater Cirurgia",
-        "Setor/Sala",
-        "CPF",
-        "Crm",
-        "Convenio",
-        "hr_inicio_antimicrobiano",
-        "hr_final_antimicrobiano",
-        "Antimicrobiano"
-      ]
+      "columns_schema": {
+        "Nr atendimento": {
+          "type": "string"
+        },
+        "Dt Internacao": {
+          "type": "instant"
+        },
+        "Dt alta": {
+          "type": "date"
+        },
+        "Nm paciente": {
+          "type": "string"
+        },
+        "Dt nascimento": {
+          "type": "date"
+        },
+        "Idade": {
+          "type": "int"
+        },
+        "Sexo": {
+          "type": "string"
+        },
+        "Ds email": {
+          "type": "string"
+        },
+        "Nr telefone": {
+          "type": "string"
+        },
+        "Nr prescricao": {
+          "type": "string"
+        },
+        "Nr cirurgia": {
+          "type": "string"
+        },
+        "Ds tipo cirurgia": {
+          "type": "string"
+        },
+        "Porte": {
+          "type": "string"
+        },
+        "COD. TUSS": {
+          "type": "string"
+        },
+        "Ds procedimento": {
+          "type": "string"
+        },
+        "Proced adicional": {
+          "type": "string"
+        },
+        "Início previsto": {
+          "type": "instant"
+        },
+        "Dt cirurgia": {
+          "type": "instant"
+        },
+        "Dt termino": {
+          "type": "instant"
+        },
+        "Nm cirurgiao": {
+          "type": "string"
+        },
+        "Duração Prevista": {
+          "type": "int"
+        },
+        "Duração Real": {
+          "type": "int"
+        },
+        "Ds especialidade cirurgiao": {
+          "type": "string"
+        },
+        "Nm anestesista": {
+          "type": "string"
+        },
+        "Vinculo Anest": {
+          "type": "string"
+        },
+        "Tipo Anestesia": {
+          "type": "string"
+        },
+        "Asa": {
+          "type": "string"
+        },
+        "Cid doenca": {
+          "type": "string"
+        },
+        "Ds cid": {
+          "type": "string"
+        },
+        "Cid definitivo": {
+          "type": "string"
+        },
+        "Ds cid def": {
+          "type": "string"
+        },
+        "Tipo Posição": {
+          "type": "string"
+        },
+        "Superfície de Suporte": {
+          "type": "string"
+        },
+        "Posição Membros": {
+          "type": "string"
+        },
+        "Pontuação Elpo": {
+          "type": "string"
+        },
+        "Carater Cirurgia": {
+          "type": "string"
+        },
+        "Setor/Sala": {
+          "type": "string"
+        },
+        "CPF": {
+          "type": "string"
+        },
+        "Crm": {
+          "type": "string"
+        },
+        "Convenio": {
+          "type": "string"
+        },
+        "hr_inicio_antimicrobiano": {
+          "type": "duration"
+        },
+        "hr_final_antimicrobiano": {
+          "type": "duration"
+        },
+        "Antimicrobiano": {
+          "type": "string"
+        }
+      }
     },
     {
       "key": "cate_4317",
@@ -268,34 +616,80 @@
       "assunto": "exames",
       "perfil": null,
       "params_schema": {
-          "DT_FINAL":                 {"type": "instant","required": true},
-          "_nrSeqSchematicsFeature":  {"type": "int","required": false},
-          "DT_INICIO":                {"type": "instant","required": true},
-          "CD_ESTABELECIMENTO_COR":   {"type": "int",    "required": true }
+        "DT_FINAL": {
+          "type": "instant",
+          "required": true
+        },
+        "_nrSeqSchematicsFeature": {
+          "type": "int",
+          "required": false
+        },
+        "DT_INICIO": {
+          "type": "instant",
+          "required": true
+        },
+        "CD_ESTABELECIMENTO_COR": {
+          "type": "int",
+          "required": true
+        }
       },
       "outputs": {
         "file_prefix": "RDSL_SADT",
         "ext": "xls"
       },
-      "columns": [
-        "Nr atendimento",
-        "Nome",
-        "Idade",
-        "Tipo de atendimento",
-        "Status exame",
-        "Setor atendimento",
-        "Medico resp",
-        "Cd procedimento",
-        "Procedimento",
-        "Exame laboratorial",
-        "Procedencia",
-        "Convenio",
-        "Dt prescricao",
-        "Dt liberacao",
-        "Dt execucao",
-        "Ds solicitacao",
-        "Nr prescricao"
-      ]
+      "columns_schema": {
+        "Nr atendimento": {
+          "type": "string"
+        },
+        "Nome": {
+          "type": "string"
+        },
+        "Idade": {
+          "type": "int"
+        },
+        "Tipo de atendimento": {
+          "type": "string"
+        },
+        "Status exame": {
+          "type": "string"
+        },
+        "Setor atendimento": {
+          "type": "string"
+        },
+        "Medico resp": {
+          "type": "string"
+        },
+        "Cd procedimento": {
+          "type": "string"
+        },
+        "Procedimento": {
+          "type": "string"
+        },
+        "Exame laboratorial": {
+          "type": "string"
+        },
+        "Procedencia": {
+          "type": "string"
+        },
+        "Convenio": {
+          "type": "string"
+        },
+        "Dt prescricao": {
+          "type": "date"
+        },
+        "Dt liberacao": {
+          "type": "date"
+        },
+        "Dt execucao": {
+          "type": "date"
+        },
+        "Ds solicitacao": {
+          "type": "string"
+        },
+        "Nr prescricao": {
+          "type": "string"
+        }
+      }
     },
     {
       "key": "cate_4718",
@@ -306,48 +700,122 @@
       "assunto": "mapa_cirurgico",
       "perfil": null,
       "params_schema": {
-          "_nrSeqSchematicsFeature":  {"type": "int","required": false},
-          "CD_ESTABELECIMENTO_P":     {"type": "int",    "required": true },
-          "DT_FINAL_P":               {"type": "instant","required": true},
-          "DT_INICIAL_P":             {"type": "instant","required": true}
+        "_nrSeqSchematicsFeature": {
+          "type": "int",
+          "required": false
+        },
+        "CD_ESTABELECIMENTO_P": {
+          "type": "int",
+          "required": true
+        },
+        "DT_FINAL_P": {
+          "type": "instant",
+          "required": true
+        },
+        "DT_INICIAL_P": {
+          "type": "instant",
+          "required": true
+        }
       },
       "outputs": {
         "file_prefix": "RDSL_MAPA_CIRURGICO",
         "ext": "xls"
       },
-      "columns": [
-        "Nr reserva",
-        "Paciente",
-        "Dt cirurgia",
-        "Hr inicio",
-        "Ds classificacao",
-        "Idade",
-        "Dt nascimento",
-        "Cd medico",
-        "Nome medico",
-        "Tel medico",
-        "Cd anestesista",
-        "Nome anestesista",
-        "Cd procedimento",
-        "Nome proc",
-        "Nome convenio",
-        "Cd estab",
-        "Cd setor atendimento",
-        "V dt chegada",
-        "V nr atendimento",
-        "Cd unidade",
-        "Unidade Desejada",
-        "Procedencia",
-        "Ds estab",
-        "Vinc anestesista",
-        "Status",
-        "Estágio Autorização",
-        "Primeiro nome",
-        "Telefone cel",
-        "Telefone pac",
-        "Nr seq classif",
-        "Classificacao pf"
-      ]
+      "columns_schema": {
+        "Nr reserva": {
+          "type": "string"
+        },
+        "Paciente": {
+          "type": "string"
+        },
+        "Dt cirurgia": {
+          "type": "date"
+        },
+        "Hr inicio": {
+          "type": "instant"
+        },
+        "Ds classificacao": {
+          "type": "string"
+        },
+        "Idade": {
+          "type": "int"
+        },
+        "Dt nascimento": {
+          "type": "date"
+        },
+        "Cd medico": {
+          "type": "string"
+        },
+        "Nome medico": {
+          "type": "string"
+        },
+        "Tel medico": {
+          "type": "string"
+        },
+        "Cd anestesista": {
+          "type": "string"
+        },
+        "Nome anestesista": {
+          "type": "string"
+        },
+        "Cd procedimento": {
+          "type": "string"
+        },
+        "Nome proc": {
+          "type": "string"
+        },
+        "Nome convenio": {
+          "type": "string"
+        },
+        "Cd estab": {
+          "type": "string"
+        },
+        "Cd setor atendimento": {
+          "type": "string"
+        },
+        "V dt chegada": {
+          "type": "date"
+        },
+        "V nr atendimento": {
+          "type": "string"
+        },
+        "Cd unidade": {
+          "type": "string"
+        },
+        "Unidade Desejada": {
+          "type": "string"
+        },
+        "Procedencia": {
+          "type": "string"
+        },
+        "Ds estab": {
+          "type": "string"
+        },
+        "Vinc anestesista": {
+          "type": "string"
+        },
+        "Status": {
+          "type": "string"
+        },
+        "Estágio Autorização": {
+          "type": "string"
+        },
+        "Primeiro nome": {
+          "type": "string"
+        },
+        "Telefone cel": {
+          "type": "string"
+        },
+        "Telefone pac": {
+          "type": "string"
+        },
+        "Nr seq classif": {
+          "type": "string"
+        },
+        "Classificacao pf": {
+          "type": "string"
+        }
+      }
     },
     {
       "key": "cate_61138",
@@ -358,18 +826,32 @@
       "assunto": "produtividade",
       "perfil": null,
       "params_schema": {
-          "IE_TIPO_ATENDIMENTO":    {"type": "string","required": false},
-          "CD_SETOR_ATENDIMENTO":   {"type": "int",    "required": false},
-          "DT_FINAL":               {"type": "instant","required": true},
-          "DT_INICIAL":             {"type": "instant","required": true},
-          "_nrSeqSchematicsFeature": {"type": "int", "required": false}
-
+        "IE_TIPO_ATENDIMENTO": {
+          "type": "string",
+          "required": false
+        },
+        "CD_SETOR_ATENDIMENTO": {
+          "type": "int",
+          "required": false
+        },
+        "DT_FINAL": {
+          "type": "instant",
+          "required": true
+        },
+        "DT_INICIAL": {
+          "type": "instant",
+          "required": true
+        },
+        "_nrSeqSchematicsFeature": {
+          "type": "int",
+          "required": false
+        }
       },
       "outputs": {
         "file_prefix": "RDSL_PRODUTIVIDADE_RECEPCOES",
         "ext": "xls"
       },
-      "columns": []
+      "columns_schema": {}
     },
     {
       "key": "cate_4751",
@@ -380,89 +862,246 @@
       "assunto": "tracking_ps",
       "perfil": null,
       "params_schema": {
-          "DT_FINAL": {"type": "instant","required": true},
-          "_nrSeqSchematicsFeature": {"type": "int",    "required": false },
-          "DT_INICIAL": {"type": "instant","required": true},
-          "IE_NIVEL_URGENCIA": {"type": "string","required": false},
-          "CD_SETOR_ATENDIMENTO": {"type": "string","required": false}
+        "DT_FINAL": {
+          "type": "instant",
+          "required": true
+        },
+        "_nrSeqSchematicsFeature": {
+          "type": "int",
+          "required": false
+        },
+        "DT_INICIAL": {
+          "type": "instant",
+          "required": true
+        },
+        "IE_NIVEL_URGENCIA": {
+          "type": "string",
+          "required": false
+        },
+        "CD_SETOR_ATENDIMENTO": {
+          "type": "string",
+          "required": false
+        }
       },
       "outputs": {
         "file_prefix": "PS_TRACKING",
         "ext": "xls"
       },
-      "columns": [
-        "Setor",
-        "Clínica",
-        "Atendimento",
-        "Paciente",
-        "Convênio",
-        "Empresa",
-        "Dt. Nascimento",
-        "Idade",
-        "Sexo",
-        "Médico 1º Atend",
-        "Médico Último Atend",
-        "Médico Reavaliação",
-        "Senha",
-        "Senha/Retirada",
-        "Senha/Chamada",
-        "Entrada",
-        "Dt Prescrição",
-        "Espera Recepção",
-        "Tempo Esp. Atend. Recepção",
-        "Atend. Recepção",
-        "Primeiro Atend.",
-        "Solicitação Reaval",
-        "Exame Laboratório",
-        "Espera Enfermagem",
-        "Atend. Enfermagem",
-        "Esp. Totem x Médico",
-        "Tempo Esp. Atend. Ficha x Médico  ",
-        "Esp. Recepção x Médico",
-        "Atend. Médico",
-        "Tempo ADM Medicamento",
-        "Espera Medicamento",
-        "Tempo Espera Medicamento",
-        "Dt Laudo Lab",
-        "Espera Laboratório",
-        "Espera Laudo Laboratório",
-        "Esp RX Presc x Exec",
-        "Espera RX",
-        "Dt Laudo TC",
-        "Espera TC",
-        "Esp TC Presc x Exec",
-        "Espera Laudo TC",
-        "Espera USG",
-        "Dt Laudo Usg",
-        "Esp USG Presc x Exec",
-        "Espera Laudo USG",
-        "Espera Reaval",
-        "Atend Reaval",
-        "Tempo PS",
-        "Internado",
-        "Sol. Internação",
-        "Espera Internação",
-        "Leito Internação",
-        "Data Internação",
-        "Tipo Leito Internação",
-        "Nível Urgência",
-        "CID",
-        "Email",
-        "Dt. Alta",
-        "DT Receita",
-        "DT Atestado",
-        "DT Alta Médico",
-        "DT Encaminhamento",
-        "Espec.Encaminhamento",
-        "DT Últ Passagem PS",
-        "MOTIVO_ALTA",
-        "Data Desfecho",
-        "Qt Minutos Entrada- Desfecho",
-        "Data Aval Inicial",
-        "Medico Aval Inicial",
-        "Data Resumo Alta",
-        "Medico Resumo Alta"
-      ]
+      "columns_schema": {
+        "Setor": {
+          "type": "string"
+        },
+        "Clínica": {
+          "type": "string"
+        },
+        "Atendimento": {
+          "type": "string"
+        },
+        "Paciente": {
+          "type": "string"
+        },
+        "Convênio": {
+          "type": "string"
+        },
+        "Empresa": {
+          "type": "string"
+        },
+        "Dt. Nascimento": {
+          "type": "instant"
+        },
+        "Idade": {
+          "type": "int"
+        },
+        "Sexo": {
+          "type": "string"
+        },
+        "Médico 1º Atend": {
+          "type": "string"
+        },
+        "Médico Último Atend": {
+          "type": "string"
+        },
+        "Médico Reavaliação": {
+          "type": "string"
+        },
+        "Senha": {
+          "type": "string"
+        },
+        "Senha/Retirada": {
+          "type": "instant"
+        },
+        "Senha/Chamada": {
+          "type": "instant"
+        },
+        "Entrada": {
+          "type": "instant"
+        },
+        "Dt Prescrição": {
+          "type": "instant"
+        },
+        "Espera Recepção": {
+          "type": "string"
+        },
+        "Tempo Esp. Atend. Recepção": {
+          "type": "string"
+        },
+        "Atend. Recepção": {
+          "type": "string"
+        },
+        "Primeiro Atend.": {
+          "type": "string"
+        },
+        "Solicitação Reaval": {
+          "type": "string"
+        },
+        "Exame Laboratório": {
+          "type": "string"
+        },
+        "Espera Enfermagem": {
+          "type": "string"
+        },
+        "Atend. Enfermagem": {
+          "type": "string"
+        },
+        "Esp. Totem x Médico": {
+          "type": "string"
+        },
+        "Tempo Esp. Atend. Ficha x Médico": {
+          "type": "string"
+        },
+        "Esp. Recepção x Médico": {
+          "type": "string"
+        },
+        "Atend. Médico": {
+          "type": "string"
+        },
+        "Tempo ADM Medicamento": {
+          "type": "string"
+        },
+        "Espera Medicamento": {
+          "type": "string"
+        },
+        "Tempo Espera Medicamento": {
+          "type": "string"
+        },
+        "Dt Laudo Lab": {
+          "type": "instant"
+        },
+        "Espera Laboratório": {
+          "type": "string"
+        },
+        "Espera Laudo Laboratório": {
+          "type": "string"
+        },
+        "Esp RX Presc x Exec": {
+          "type": "string"
+        },
+        "Espera RX": {
+          "type": "string"
+        },
+        "Dt Laudo TC": {
+          "type": "instant"
+        },
+        "Espera TC": {
+          "type": "string"
+        },
+        "Esp TC Presc x Exec": {
+          "type": "string"
+        },
+        "Espera Laudo TC": {
+          "type": "string"
+        },
+        "Espera USG": {
+          "type": "string"
+        },
+        "Dt Laudo Usg": {
+          "type": "instant"
+        },
+        "Esp USG Presc x Exec": {
+          "type": "string"
+        },
+        "Espera Laudo USG": {
+          "type": "string"
+        },
+        "Espera Reaval": {
+          "type": "string"
+        },
+        "Atend Reaval": {
+          "type": "string"
+        },
+        "Tempo PS": {
+          "type": "string"
+        },
+        "Internado": {
+          "type": "string"
+        },
+        "Sol. Internação": {
+          "type": "string"
+        },
+        "Espera Internação": {
+          "type": "string"
+        },
+        "Leito Internação": {
+          "type": "string"
+        },
+        "Data Internação": {
+          "type": "instant"
+        },
+        "Tipo Leito Internação": {
+          "type": "string"
+        },
+        "Nível Urgência": {
+          "type": "string"
+        },
+        "CID": {
+          "type": "string"
+        },
+        "Email": {
+          "type": "string"
+        },
+        "Dt. Alta": {
+          "type": "instant"
+        },
+        "DT Receita": {
+          "type": "instant"
+        },
+        "DT Atestado": {
+          "type": "instant"
+        },
+        "DT Alta Médico": {
+          "type": "instant"
+        },
+        "DT Encaminhamento": {
+          "type": "string"
+        },
+        "Espec.Encaminhamento": {
+          "type": "string"
+        },
+        "DT Últ Passagem PS": {
+          "type": "instant"
+        },
+        "MOTIVO_ALTA": {
+          "type": "string"
+        },
+        "Data Desfecho": {
+          "type": "instant"
+        },
+        "Qt Minutos Entrada- Desfecho": {
+          "type": "int"
+        },
+        "Data Aval Inicial": {
+          "type": "instant"
+        },
+        "Medico Aval Inicial": {
+          "type": "string"
+        },
+        "Data Resumo Alta": {
+          "type": "instant"
+        },
+        "Medico Resumo Alta": {
+          "type": "string"
+        }
+      }
     }
   ]
 }

@@ -11,7 +11,6 @@ import { readFile } from "node:fs/promises";
 import { TasyClient } from "../src/index.js";
 import { buildSpecs, type CatalogFile } from "../src/services/reports.js";
 import { parseDateRef } from "../src/services/params.js";
-import { tsvToRows } from "../src/convert/tsv.js";
 import { consoleLogger } from "../src/cli/logger.js";
 
 async function main(): Promise<void> {
@@ -38,14 +37,15 @@ async function main(): Promise<void> {
   };
 
   console.log(`Gerando ${key} para ${dateRef.toISOString().slice(0, 10)} ...`);
+  // Formato padrão: linhas JSON já parseadas (f.rows).
   const result = await tasy.reports.generate(spec, args, dateRef);
   console.log("Arquivos retornados:", result.fileNames.length);
   for (const f of result.files) {
-    const rows = tsvToRows(f.content);
-    console.log(`  bytes=${f.content.length} linhas=${rows.length} colunas=${rows[0]?.length ?? 0}`);
-    console.log(`  cabeçalho: ${JSON.stringify(rows[0])}`);
+    const colunas = f.rows[0] ? Object.keys(f.rows[0]) : [];
+    console.log(`  linhas=${f.rows.length} colunas=${colunas.length}`);
+    console.log(`  cabeçalho: ${JSON.stringify(colunas)}`);
   }
-  console.log("\nOK — pipeline generateReports + download + decode validado.");
+  console.log("\nOK — pipeline generateReports + download + parse JSON validado.");
 }
 
 main().catch((e) => {
