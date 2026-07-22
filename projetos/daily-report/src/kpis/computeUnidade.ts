@@ -76,6 +76,11 @@ export function computeUnidade(
   // D-0 e o histórico anterior a D-0.
   const frcst = calcularForecasts(db, id, extracaoHoje);
 
+  // "Previstos" de CEMED e exames: sem agenda ambulatorial/de exames, usamos a
+  // mediana do mesmo dia-da-semana (alvo = D-1, o dia reportado) como baseline
+  // esperado — decisão de 2026-07-22, "por enquanto", até haver agenda real.
+  const prev = calcularForecasts(db, id, refIso);
+
   const report: UnidadeReport = {
     unidade: unidade.unidade,
     id_unidade: id,
@@ -99,8 +104,8 @@ export function computeUnidade(
     tx_internacao: taxa(ps.internacoes_ps, ps.atendimentos_ps),
 
     atendimentos_cemed: cemed.atendimentos_cemed,
-    atendimentos_cemed_previstos: null, // sem agenda ambulatorial
-    tx_confirmacao_agenda_cemed: null,
+    atendimentos_cemed_previstos: prev.valores.atendimentos_cemed,
+    tx_confirmacao_agenda_cemed: taxa(cemed.atendimentos_cemed, prev.valores.atendimentos_cemed),
 
     exames_eda: exames.exames_eda,
     exames_usg: exames.exames_usg,
@@ -108,11 +113,11 @@ export function computeUnidade(
     exames_tc: exames.exames_tc,
     exames_rm: exames.exames_rm,
 
-    exames_eda_previstos: null, // sem agenda de exames
-    exames_usg_previstos: null,
-    exames_cardio_previstos: null,
-    exames_tc_previstos: null,
-    exames_rm_previstos: null,
+    exames_eda_previstos: prev.valores.exames_eda,
+    exames_usg_previstos: prev.valores.exames_usg,
+    exames_cardio_previstos: prev.valores.exames_cardio,
+    exames_tc_previstos: prev.valores.exames_tc,
+    exames_rm_previstos: prev.valores.exames_rm,
 
     cirurgias_frcst: mapaHoje._diag.linhas_brutas > 0 ? mapaHoje.cirurgias_previstas : null,
     pac_dia_uni_frcst: frcst.valores.pac_dia_uni,

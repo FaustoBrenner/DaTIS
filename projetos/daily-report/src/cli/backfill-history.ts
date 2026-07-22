@@ -77,7 +77,7 @@ console.log("-".repeat(60));
 let inseridos = 0;
 let atualizados = 0;
 for (const dia of dias) {
-  const { report } = computeUnidadeDia(fontes, unidade, dia);
+  const { report } = computeUnidadeDia(db, fontes, unidade, dia);
   const { acao } = upsertRelatorioDiario(db, dia, report);
   if (acao === "inserido") inseridos++;
   else atualizados++;

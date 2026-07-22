@@ -1,4 +1,5 @@
 import type { UnidadeConfig } from "../config.js";
+import type { Db } from "../db/conn.js";
 import type { LinhaTasy } from "../io/json.js";
 import { unidadeReportSchema, taxa, type UnidadeReport } from "../types.js";
 import { calcularKpisPs } from "../sources/trackingPs.js";
@@ -7,6 +8,7 @@ import { calcularKpisCemed } from "../sources/trackingCemed.js";
 import { calcularKpisMapaCir } from "../sources/mapaCir.js";
 import { calcularKpisExames } from "../sources/exames.js";
 import { calcularOcupacaoCenso } from "../sources/censo.js";
+import { calcularForecasts } from "./forecast.js";
 
 /**
  * Cálculo dos KPIs de UM dia histórico para o backfill de `relatorios_diarios`.
@@ -17,8 +19,10 @@ import { calcularOcupacaoCenso } from "../sources/censo.js";
  *  - Ocupação: censo com corte às 06:00 (não o snapshot OCUPACAO).
  *  - `cirurgias_previstas`(D) = eletivas realizadas(D) + reservas não-realizadas
  *    do mapa(D). O mapa 4718 passou a representar a diferença agendado−realizado.
- *  - Campos `*_frcst` e `*_previstos` (exceto cirúrgico) ficam `null`: estas
- *    linhas são os ATUAIS do dia, base do forecast — não previsões.
+ *  - `*_previstos` de CEMED/exames = mediana do mesmo dia-da-semana até D (lê o
+ *    histórico já gravado; por isso o backfill roda em ordem cronológica).
+ *  - Campos `*_frcst` ficam `null`: são previsão do dia seguinte, sem uso na
+ *    linha histórica (o forecast lê os campos realizados, não os `*_frcst`).
  */
 
 export interface FontesBackfill {
@@ -36,6 +40,7 @@ export interface ResultadoDia {
 }
 
 export function computeUnidadeDia(
+  db: Db,
   fontes: FontesBackfill,
   unidade: UnidadeConfig,
   diaIso: string,
@@ -50,6 +55,9 @@ export function computeUnidadeDia(
   const mapaDia = calcularKpisMapaCir(fontes.mapaCir, diaIso);
   const naoRealizadas = mapaDia.cirurgias_previstas;
   const previstas = cir.cirurgias_eletivas + naoRealizadas;
+
+  // Baseline "previsto" de CEMED/exames = mediana do dia-da-semana até D.
+  const prev = calcularForecasts(db, unidade.id_unidade, diaIso);
 
   const report: UnidadeReport = {
     unidade: unidade.unidade,
@@ -74,8 +82,8 @@ export function computeUnidadeDia(
     tx_internacao: taxa(ps.internacoes_ps, ps.atendimentos_ps),
 
     atendimentos_cemed: cemed.atendimentos_cemed,
-    atendimentos_cemed_previstos: null,
-    tx_confirmacao_agenda_cemed: null,
+    atendimentos_cemed_previstos: prev.valores.atendimentos_cemed,
+    tx_confirmacao_agenda_cemed: taxa(cemed.atendimentos_cemed, prev.valores.atendimentos_cemed),
 
     exames_eda: exames.exames_eda,
     exames_usg: exames.exames_usg,
@@ -83,11 +91,11 @@ export function computeUnidadeDia(
     exames_tc: exames.exames_tc,
     exames_rm: exames.exames_rm,
 
-    exames_eda_previstos: null,
-    exames_usg_previstos: null,
-    exames_cardio_previstos: null,
-    exames_tc_previstos: null,
-    exames_rm_previstos: null,
+    exames_eda_previstos: prev.valores.exames_eda,
+    exames_usg_previstos: prev.valores.exames_usg,
+    exames_cardio_previstos: prev.valores.exames_cardio,
+    exames_tc_previstos: prev.valores.exames_tc,
+    exames_rm_previstos: prev.valores.exames_rm,
 
     // Backfill reconstrói os atuais; forecast é forward-looking (fica null aqui).
     cirurgias_frcst: null,
