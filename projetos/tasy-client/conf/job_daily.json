@@ -55,8 +55,8 @@
       "key": "cate_4718",
       "args": {
         "CD_ESTABELECIMENTO_P": 14,
-        "DT_INICIAL_P": "@date_ref_T00Z",
-        "DT_FINAL_P": "@date_ref_T00Z"
+        "DT_INICIAL_P": "@date_ref+1d_T00Z",
+        "DT_FINAL_P": "@date_ref+1d_T00Z"
       }
     },
     {
