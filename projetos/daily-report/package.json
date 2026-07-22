@@ -11,9 +11,11 @@
     "typecheck": "tsc --noEmit",
     "load": "tsx src/cli/load-extraction.ts",
     "backfill": "tsx src/cli/backfill-history.ts",
-    "report": "tsx src/cli/build-report.ts"
+    "report": "tsx src/cli/build-report.ts",
+    "export": "tsx src/cli/export-xlsx.ts"
   },
   "dependencies": {
+    "exceljs": "^4.4.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
