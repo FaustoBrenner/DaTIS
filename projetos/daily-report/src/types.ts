@@ -1,7 +1,10 @@
 import { z } from "zod";
 
 /**
- * Contrato de KPIs de UMA unidade — espelha `daily_report_schema.json`.
+ * Contrato de KPIs de UMA unidade (o objeto gravado em `relatorios_diarios.kpis`).
+ * As colunas auxiliares do banco/export — `data`, `dia_semana`, `dia_semana_nome`,
+ * `capturado_em` — são adicionadas pela camada de store (`db/repos`) e pelo export,
+ * não fazem parte deste objeto; `daily_report_schema.json` descreve a linha completa.
  * Campos numéricos são nullable: `null` significa "não foi possível derivar
  * com os dados disponíveis" (ex.: forecast sem histórico, taxa sem agenda).
  */

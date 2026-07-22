@@ -1,13 +1,17 @@
 {
+    "data":{"type": "string", "format": "date"},
+    "dia_semana":{"type": "integer"},
+    "dia_semana_nome":{"type": "string"},
+
     "unidade":{"type": "string"},
     "id_unidade":{"type": "integer"},
-    
+
     "cirurgias":{"type": ["number", "null"]},
     "cirurgias_eletivas":{"type": ["number", "null"]},
     "cirurgias_urgencia":{"type": ["number", "null"]},
     "cirurgias_previstas":{"type": ["number", "null"]},
     "tx_confirmacao_agenda_cirurgica":{"type": ["number", "null"]},
-    
+
     "pac_dia_uni":{"type": ["number", "null"]},
     "leitos_uni":{"type": ["number", "null"]},
     "tx_ocupacao_uni":{"type": ["number", "null"]},
@@ -46,5 +50,7 @@
     "exames_usg_frcst":{"type": ["number", "null"]},
     "exames_cardio_frcst":{"type": ["number", "null"]},
     "exames_tc_frcst":{"type": ["number", "null"]},
-    "exames_rm_frcst":{"type": ["number", "null"]}
+    "exames_rm_frcst":{"type": ["number", "null"]},
+
+    "capturado_em":{"type": "string", "format": "date-time"}
 }

@@ -9,6 +9,7 @@ import { calcularKpisMapaCir } from "../sources/mapaCir.js";
 import { calcularKpisExames } from "../sources/exames.js";
 import { calcularOcupacaoCenso } from "../sources/censo.js";
 import { calcularForecasts } from "./forecast.js";
+import { proximoDia } from "../io/dates.js";
 
 /**
  * Cálculo dos KPIs de UM dia histórico para o backfill de `relatorios_diarios`.
@@ -21,8 +22,11 @@ import { calcularForecasts } from "./forecast.js";
  *    do mapa(D). O mapa 4718 passou a representar a diferença agendado−realizado.
  *  - `*_previstos` de CEMED/exames = mediana do mesmo dia-da-semana até D (lê o
  *    histórico já gravado; por isso o backfill roda em ordem cronológica).
- *  - Campos `*_frcst` ficam `null`: são previsão do dia seguinte, sem uso na
- *    linha histórica (o forecast lê os campos realizados, não os `*_frcst`).
+ *  - `*_frcst`(D) = a previsão para o DIA SEGUINTE (D+1), pela identidade
+ *    "frcst de ontem = previsto de hoje": os campos por mediana usam
+ *    `calcularForecasts(D+1)` e `cirurgias_frcst` = `cirurgias_previstas`(D+1).
+ *    A mediana de D+1 só depende de dias do mesmo dia-da-semana (todos < D), então
+ *    é calculável mesmo antes de D+1 ser processado.
  */
 
 export interface FontesBackfill {
@@ -58,6 +62,13 @@ export function computeUnidadeDia(
 
   // Baseline "previsto" de CEMED/exames = mediana do dia-da-semana até D.
   const prev = calcularForecasts(db, unidade.id_unidade, diaIso);
+
+  // `*_frcst`(D) = previsão para D+1 (identidade frcst[D] = previsto[D+1]).
+  const proximoIso = proximoDia(diaIso);
+  const fcProx = calcularForecasts(db, unidade.id_unidade, proximoIso);
+  const cirProx = calcularKpisCirurgias(fontes.cirurgias, proximoIso);
+  const mapaProx = calcularKpisMapaCir(fontes.mapaCir, proximoIso);
+  const cirurgiasPrevistasProx = cirProx.cirurgias_eletivas + mapaProx.cirurgias_previstas;
 
   const report: UnidadeReport = {
     unidade: unidade.unidade,
@@ -97,18 +108,18 @@ export function computeUnidadeDia(
     exames_tc_previstos: prev.valores.exames_tc,
     exames_rm_previstos: prev.valores.exames_rm,
 
-    // Backfill reconstrói os atuais; forecast é forward-looking (fica null aqui).
-    cirurgias_frcst: null,
-    pac_dia_uni_frcst: null,
-    pac_dia_uti_frcst: null,
-    atendimentos_ps_frcst: null,
-    atendimentos_cemed_frcst: null,
+    // Previsão para D+1 (frcst[D] = previsto[D+1]).
+    cirurgias_frcst: cirurgiasPrevistasProx,
+    pac_dia_uni_frcst: fcProx.valores.pac_dia_uni,
+    pac_dia_uti_frcst: fcProx.valores.pac_dia_uti,
+    atendimentos_ps_frcst: fcProx.valores.atendimentos_ps,
+    atendimentos_cemed_frcst: fcProx.valores.atendimentos_cemed,
 
-    exames_eda_frcst: null,
-    exames_usg_frcst: null,
-    exames_cardio_frcst: null,
-    exames_tc_frcst: null,
-    exames_rm_frcst: null,
+    exames_eda_frcst: fcProx.valores.exames_eda,
+    exames_usg_frcst: fcProx.valores.exames_usg,
+    exames_cardio_frcst: fcProx.valores.exames_cardio,
+    exames_tc_frcst: fcProx.valores.exames_tc,
+    exames_rm_frcst: fcProx.valores.exames_rm,
   };
 
   const validado = unidadeReportSchema.parse(report);

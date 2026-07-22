@@ -31,6 +31,14 @@ export function noDia(valor: unknown, refIso: string): boolean {
   return dataIso(valor) === refIso;
 }
 
+/** Dia seguinte a `iso` (`aaaa-mm-dd`), por componentes locais. */
+export function proximoDia(iso: string): string {
+  const [y, m, d] = iso.split("-").map(Number);
+  const dt = new Date(y!, m! - 1, d! + 1, 12, 0, 0);
+  const p = (n: number) => String(n).padStart(2, "0");
+  return `${dt.getFullYear()}-${p(dt.getMonth() + 1)}-${p(dt.getDate())}`;
+}
+
 /**
  * Lista os dias `aaaa-mm-dd` de `inicioIso` até `fimIso` (ambos inclusive).
  * Itera por componentes de data local (meio-dia, para evitar bordas de DST).
