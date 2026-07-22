@@ -33,7 +33,7 @@ tasy-client (Node)                              Power Automate Cloud Flow
 | # | Decisão | Escolha |
 |---|---|---|
 | 1 | Runtime da extração | Node CLI + Task Scheduler na máquina de extração existente. Sem Power Automate Desktop (trabalho é headless). |
-| 2 | Dono do histórico | **Node local** (JSONL ou SQLite). O Node produz todo dado — incluindo backfill — e calcula forecast e comparações. |
+| 2 | Dono do histórico | **Node local**, **SQLite via `node:sqlite`** (embutido no Node 24, sem dependência nativa). Escolhido após `better-sqlite3` falhar na compilação (sem VS Build Tools na máquina de extração). O banco é intermediário do I/O: preserva as colunas brutas de toda extração (`registros`) e serve os KPIs computados (`relatorios_diarios`). O Node produz todo dado — incluindo backfill — e calcula forecast e comparações. |
 | 3 | Papel do SharePoint | Lista = camada de **serving/leitura**: 1 linha por unidade-dia, fonte para Power BI e auditoria humana. **Nunca editar manualmente** — correção se faz no store do Node e reenvia (upsert). |
 | 4 | Transporte Node → nuvem | POST no trigger "When an HTTP request is received" (Premium). Payload completo: KPIs + forecast + bloco de comparações prontas. |
 | 5 | Síntese IA | AI Builder (GPT) dentro do M365 — zero procurement, dado não sai do tenant (e são KPIs agregados, sem dado de paciente). Prompt versionado neste repositório; migrar para API externa (Claude/GPT) depois é troca de transporte, não reescrita. |
@@ -96,10 +96,12 @@ tasy-client (Node)                              Power Automate Cloud Flow
 
 ## Pendências (abertas)
 
-1. **Mapeamento relatório → KPI**: quais dos 8 relatórios do `job_daily` alimentam quais
-   campos do schema, e a spec de parsing de cada um. Primeira tarefa de implementação.
-2. **Algoritmo de forecast**: definir método determinístico (ex.: mediana do mesmo dia da
-   semana nas últimas 8 semanas, com sazonalidade mensal) após olhar o histórico real.
+1. ~~**Mapeamento relatório → KPI**~~ **FECHADO (2026-07-22).** Ver a tabela KPI→fonte no
+   `README.md`. 5 relatórios + ocupação mapeados; parsing em `src/sources/`.
+2. ~~**Algoritmo de forecast**~~ **FECHADO (2026-07-22).** **Mediana do mesmo dia-da-semana
+   nas últimas 10 semanas** (determinístico, `src/kpis/forecast.ts`). `cirurgias_frcst` é
+   exceção: vem da contagem do mapa cirúrgico extraído no próprio dia (D-0). Substitui a
+   nota antiga de "SMA/mediana 8 semanas".
 3. **Teste de agregação por período** dos relatórios (define a estratégia do backfill).
 4. **Horário de corte**: a que horas os dados do dia anterior estão estáveis no TASY?
    Define o agendamento do job.

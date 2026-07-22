@@ -1,12 +1,13 @@
-import fs from "node:fs";
+import type { LinhaTasy } from "../io/json.js";
 import { LEITOS_INTERNACAO, LEITOS_UTI } from "../ref/setores.js";
 import { taxa } from "../types.js";
 
 /**
- * OCUPACAO.json — snapshot (ponto no tempo) da ocupação de leitos, vindo do
- * painel schematic/cpanel do TASY.
+ * Ocupação de leitos — snapshot (ponto no tempo) vindo do painel schematic/cpanel
+ * do TASY. Cada linha de `dados.linhasResultSet[]` do JSON original é carregada
+ * no banco como um registro (relatorio='OCUPACAO'); aqui recebemos essas linhas.
  *
- * Estrutura: `dados.linhasResultSet[]`, com `CD_TIPO_INFORMACAO`:
+ * `CD_TIPO_INFORMACAO`:
  *   3 = total geral (internação + intensiva)
  *   2 = subtotais ("Unidades de Internação" e "Unidade de terapia intensiva")
  *   1 = setores individuais (com CD_CLASSIF_SETOR 3=enfermaria, 4=UTI)
@@ -55,9 +56,8 @@ function normalizar(s: string | undefined): string {
     .trim();
 }
 
-export function calcularKpisOcupacao(caminho: string): KpisOcupacao {
-  const doc = JSON.parse(fs.readFileSync(caminho, "utf8"));
-  const linhas: LinhaOcupacao[] = doc?.dados?.linhasResultSet ?? [];
+export function calcularKpisOcupacao(registros: LinhaTasy[]): KpisOcupacao {
+  const linhas = registros as LinhaOcupacao[];
 
   const subtotais = linhas.filter((l) => l.CD_TIPO_INFORMACAO === 2);
   const uni = subtotais.find((l) => normalizar(l.DS_SETOR_ATENDIMENTO).includes("unidades de internacao"));

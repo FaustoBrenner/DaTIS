@@ -9,6 +9,7 @@
   "scripts": {
     "build": "tsc",
     "typecheck": "tsc --noEmit",
+    "load": "tsx src/cli/load-extraction.ts",
     "report": "tsx src/cli/build-report.ts"
   },
   "dependencies": {

@@ -3,6 +3,8 @@
     "id_unidade":{"type": "integer"},
     
     "cirurgias":{"type": ["number", "null"]},
+    "cirurgias_eletivas":{"type": ["number", "null"]},
+    "cirurgias_urgencia":{"type": ["number", "null"]},
     "cirurgias_previstas":{"type": ["number", "null"]},
     "tx_confirmacao_agenda_cirurgica":{"type": ["number", "null"]},
     
@@ -22,9 +24,27 @@
     "atendimentos_cemed_previstos":{"type": ["number", "null"]},
     "tx_confirmacao_agenda_cemed":{"type": ["number", "null"]},
 
+    "exames_eda":{"type": ["number", "null"]},
+    "exames_usg":{"type": ["number", "null"]},
+    "exames_cardio":{"type": ["number", "null"]},
+    "exames_tc":{"type": ["number", "null"]},
+    "exames_rm":{"type": ["number", "null"]},
+
+    "exames_eda_previstos":{"type": ["number", "null"]},
+    "exames_usg_previstos":{"type": ["number", "null"]},
+    "exames_cardio_previstos":{"type": ["number", "null"]},
+    "exames_tc_previstos":{"type": ["number", "null"]},
+    "exames_rm_previstos":{"type": ["number", "null"]},
+
     "cirurgias_frcst":{"type": ["number", "null"]},
     "pac_dia_uni_frcst":{"type": ["number", "null"]},
     "pac_dia_uti_frcst":{"type": ["number", "null"]},
     "atendimentos_ps_frcst":{"type": ["number", "null"]},
-    "atendimentos_cemed_frcst":{"type": ["number", "null"]}
+    "atendimentos_cemed_frcst":{"type": ["number", "null"]},
+
+    "exames_eda_frcst":{"type": ["number", "null"]},
+    "exames_usg_frcst":{"type": ["number", "null"]},
+    "exames_cardio_frcst":{"type": ["number", "null"]},
+    "exames_tc_frcst":{"type": ["number", "null"]},
+    "exames_rm_frcst":{"type": ["number", "null"]}
 }

@@ -12,6 +12,8 @@ export const unidadeReportSchema = z.object({
   id_unidade: z.number().int(),
 
   cirurgias: numOuNull,
+  cirurgias_eletivas: numOuNull,
+  cirurgias_urgencia: numOuNull,
   cirurgias_previstas: numOuNull,
   tx_confirmacao_agenda_cirurgica: numOuNull,
 
@@ -31,11 +33,29 @@ export const unidadeReportSchema = z.object({
   atendimentos_cemed_previstos: numOuNull,
   tx_confirmacao_agenda_cemed: numOuNull,
 
+  exames_eda: numOuNull,
+  exames_usg: numOuNull,
+  exames_cardio: numOuNull,
+  exames_tc: numOuNull,
+  exames_rm: numOuNull,
+
+  exames_eda_previstos: numOuNull,
+  exames_usg_previstos: numOuNull,
+  exames_cardio_previstos: numOuNull,
+  exames_tc_previstos: numOuNull,
+  exames_rm_previstos: numOuNull,
+
   cirurgias_frcst: numOuNull,
   pac_dia_uni_frcst: numOuNull,
   pac_dia_uti_frcst: numOuNull,
   atendimentos_ps_frcst: numOuNull,
   atendimentos_cemed_frcst: numOuNull,
+
+  exames_eda_frcst: numOuNull,
+  exames_usg_frcst: numOuNull,
+  exames_cardio_frcst: numOuNull,
+  exames_tc_frcst: numOuNull,
+  exames_rm_frcst: numOuNull,
 });
 
 export type UnidadeReport = z.infer<typeof unidadeReportSchema>;

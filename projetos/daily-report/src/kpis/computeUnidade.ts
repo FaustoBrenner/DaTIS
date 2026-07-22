@@ -1,5 +1,6 @@
-import path from "node:path";
 import type { UnidadeConfig } from "../config.js";
+import type { Db } from "../db/conn.js";
+import { registrosDaExtracao } from "../db/repos.js";
 import { unidadeReportSchema, taxa, type UnidadeReport } from "../types.js";
 import { calcularKpisPs } from "../sources/trackingPs.js";
 import { calcularKpisCirurgias } from "../sources/cirurgias.js";
@@ -7,22 +8,26 @@ import { calcularKpisCemed } from "../sources/trackingCemed.js";
 import { calcularKpisMapaCir } from "../sources/mapaCir.js";
 import { calcularKpisExames } from "../sources/exames.js";
 import { calcularKpisOcupacao } from "../sources/ocupacao.js";
+import { calcularForecasts } from "./forecast.js";
 
-/** Nomes dos artefatos na pasta de extração (convenção do TASY). */
-export const ARQUIVOS = {
-  ps: "2432_TRACKING_PS.xls",
-  cirurgias: "3136_CIRURGIAS_REALIZADAS.xls",
-  cemed: "3523_TRACKING_CEMED.xls",
-  exames: "4317_GESTAO_EXAMES.xls",
-  mapaCir: "4718_MAPA_CIR.xls",
-  ocupacao: "OCUPACAO.json",
+/** Códigos de relatório no banco (convenção do TASY). */
+export const RELATORIOS = {
+  ps: "2432",
+  cirurgias: "3136",
+  cemed: "3523",
+  exames: "4317",
+  mapaCir: "4718",
+  ocupacao: "OCUPACAO",
 } as const;
 
 export interface JanelaReport {
   /** Dia dos dados realizados (D-1), formato `aaaa-mm-dd`. */
   refIso: string;
-  /** Dia-alvo do mapa cirúrgico (D+1), formato `aaaa-mm-dd`. */
-  mapaAlvoIso: string;
+  /**
+   * Dia da extração corrente (D-0, hoje). As extrações de "realizados" e a
+   * ocupação são lidas por esta data; o mapa cirúrgico de D-0 dá `cirurgias_frcst`.
+   */
+  extracaoHoje: string;
 }
 
 export interface ResultadoUnidade {
@@ -31,35 +36,55 @@ export interface ResultadoUnidade {
 }
 
 /**
- * Calcula os KPIs de uma unidade a partir da pasta de extração.
+ * Calcula os KPIs de uma unidade CONSULTANDO O BANCO (não arquivos).
  *
- * Campos deixados em `null` de propósito (não deriváveis da extração atual):
- *  - tx_confirmacao_agenda_cirurgica : precisa de mapa e realizadas do MESMO dia.
- *  - atendimentos_cemed_previstos / tx_confirmacao_agenda_cemed : precisa da
- *    agenda ambulatorial (não presente na amostra).
- *  - *_frcst : forecast, depende de histórico (fase posterior).
+ * Modelo temporal (ver ARQUITETURA.md):
+ *  - Realizados (PS, cirurgias, CEMED, exames) e ocupação vêm da extração de
+ *    HOJE (D-0), que traz os eventos de ONTEM (D-1) — filtrados por `refIso`.
+ *  - `cirurgias_previstas` (D-1) vem do MAPA extraído em D-1 (persistido ontem).
+ *  - `cirurgias_frcst` (D-0) vem do MAPA extraído hoje (contagem total).
+ *  - demais `*_frcst`: mediana do mesmo dia-da-semana (últimas 10 semanas).
+ *
+ * Campos deixados em `null` (não deriváveis das extrações atuais):
+ *  - atendimentos_cemed_previstos / tx_confirmacao_agenda_cemed: sem agenda ambulatorial.
+ *  - exames_*_previstos: sem agenda de exames.
  */
 export function computeUnidade(
-  pastaDados: string,
+  db: Db,
   unidade: UnidadeConfig,
   janela: JanelaReport,
 ): ResultadoUnidade {
-  const p = (arq: string) => path.join(pastaDados, arq);
+  const { refIso, extracaoHoje } = janela;
+  const id = unidade.id_unidade;
+  const reg = (relatorio: string, dataExtracao: string) =>
+    registrosDaExtracao(db, relatorio, id, dataExtracao);
 
-  const ps = calcularKpisPs(p(ARQUIVOS.ps), janela.refIso);
-  const cir = calcularKpisCirurgias(p(ARQUIVOS.cirurgias), janela.refIso);
-  const cemed = calcularKpisCemed(p(ARQUIVOS.cemed), janela.refIso);
-  const mapa = calcularKpisMapaCir(p(ARQUIVOS.mapaCir), janela.mapaAlvoIso);
-  const exames = calcularKpisExames(p(ARQUIVOS.exames), janela.refIso);
-  const ocup = calcularKpisOcupacao(p(ARQUIVOS.ocupacao));
+  // Realizados (D-1) + ocupação: extração de hoje (D-0).
+  const ps = calcularKpisPs(reg(RELATORIOS.ps, extracaoHoje), refIso);
+  const cir = calcularKpisCirurgias(reg(RELATORIOS.cirurgias, extracaoHoje), refIso);
+  const cemed = calcularKpisCemed(reg(RELATORIOS.cemed, extracaoHoje), refIso);
+  const exames = calcularKpisExames(reg(RELATORIOS.exames, extracaoHoje), refIso);
+  const ocup = calcularKpisOcupacao(reg(RELATORIOS.ocupacao, extracaoHoje));
+
+  // Mapa cirúrgico: previstas de D-1 (mapa de ontem) e frcst de D-0 (mapa de hoje).
+  const mapaOntem = calcularKpisMapaCir(reg(RELATORIOS.mapaCir, refIso), refIso);
+  const mapaHoje = calcularKpisMapaCir(reg(RELATORIOS.mapaCir, extracaoHoje), extracaoHoje);
+  const previstasOntem = mapaOntem._diag.linhas_brutas > 0 ? mapaOntem.cirurgias_previstas : null;
+
+  // Forecasts por mediana do dia-da-semana. O alvo é HOJE (D-0 = extracaoHoje):
+  // os campos *_frcst são "previsão para hoje", então usamos o dia-da-semana de
+  // D-0 e o histórico anterior a D-0.
+  const frcst = calcularForecasts(db, id, extracaoHoje);
 
   const report: UnidadeReport = {
     unidade: unidade.unidade,
-    id_unidade: unidade.id_unidade,
+    id_unidade: id,
 
     cirurgias: cir.cirurgias,
-    cirurgias_previstas: mapa.cirurgias_previstas,
-    tx_confirmacao_agenda_cirurgica: null, // dias distintos na amostra
+    cirurgias_eletivas: cir.cirurgias_eletivas,
+    cirurgias_urgencia: cir.cirurgias_urgencia,
+    cirurgias_previstas: previstasOntem,
+    tx_confirmacao_agenda_cirurgica: taxa(cir.cirurgias_eletivas, previstasOntem),
 
     pac_dia_uni: ocup.pac_dia_uni,
     leitos_uni: ocup.leitos_uni,
@@ -74,17 +99,34 @@ export function computeUnidade(
     tx_internacao: taxa(ps.internacoes_ps, ps.atendimentos_ps),
 
     atendimentos_cemed: cemed.atendimentos_cemed,
-    atendimentos_cemed_previstos: null, // sem agenda ambulatorial na amostra
+    atendimentos_cemed_previstos: null, // sem agenda ambulatorial
     tx_confirmacao_agenda_cemed: null,
 
-    cirurgias_frcst: null,
-    pac_dia_uni_frcst: null,
-    pac_dia_uti_frcst: null,
-    atendimentos_ps_frcst: null,
-    atendimentos_cemed_frcst: null,
+    exames_eda: exames.exames_eda,
+    exames_usg: exames.exames_usg,
+    exames_cardio: exames.exames_cardio,
+    exames_tc: exames.exames_tc,
+    exames_rm: exames.exames_rm,
+
+    exames_eda_previstos: null, // sem agenda de exames
+    exames_usg_previstos: null,
+    exames_cardio_previstos: null,
+    exames_tc_previstos: null,
+    exames_rm_previstos: null,
+
+    cirurgias_frcst: mapaHoje._diag.linhas_brutas > 0 ? mapaHoje.cirurgias_previstas : null,
+    pac_dia_uni_frcst: frcst.valores.pac_dia_uni,
+    pac_dia_uti_frcst: frcst.valores.pac_dia_uti,
+    atendimentos_ps_frcst: frcst.valores.atendimentos_ps,
+    atendimentos_cemed_frcst: frcst.valores.atendimentos_cemed,
+
+    exames_eda_frcst: frcst.valores.exames_eda,
+    exames_usg_frcst: frcst.valores.exames_usg,
+    exames_cardio_frcst: frcst.valores.exames_cardio,
+    exames_tc_frcst: frcst.valores.exames_tc,
+    exames_rm_frcst: frcst.valores.exames_rm,
   };
 
-  // Garante aderência ao contrato do schema.
   const validado = unidadeReportSchema.parse(report);
 
   return {
@@ -94,9 +136,11 @@ export function computeUnidade(
       ps: ps._diag,
       cirurgias: cir._diag,
       cemed: cemed._diag,
-      mapa_cir: mapa._diag,
       exames: exames._diag,
+      mapa_cir_previstas: mapaOntem._diag,
+      mapa_cir_frcst: mapaHoje._diag,
       ocupacao: ocup._diag,
+      forecast: frcst._diag,
     },
   };
 }

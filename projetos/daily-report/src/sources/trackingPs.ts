@@ -1,13 +1,14 @@
-import { parseTasyTsv } from "../io/tsv.js";
-import { dataIsoBr } from "../io/dates.js";
+import { txt, type LinhaTasy } from "../io/json.js";
+import { dataIso } from "../io/dates.js";
 
 /**
  * Relatório 2432 — Tracking PS (Pronto Socorro).
  * 1 linha por atendimento de PS, com tempos de cada etapa do fluxo.
  *
  * KPIs (spec do líder):
- *  - atendimentos_ps : contagem de atendimentos distintos, removendo outliers
- *                      de tempo/preenchimento.
+ *  - atendimentos_ps : contagem de atendimentos distintos com entrada no dia-ref.
+ *                      Sem filtro de outlier por ora — todas as linhas com
+ *                      `Nr atendimento` numérico contam (decisão de 2026-07-20).
  *  - internacoes_ps  : atendimentos com data de alocação em leito (`Dt aloc leito`).
  *  - tx_internacao   : internacoes_ps / atendimentos_ps.
  */
@@ -34,16 +35,14 @@ export interface KpisPs {
 /**
  * @param refIso dia de referência (`aaaa-mm-dd`), tipicamente D-1.
  *
- * Regra de outlier/preenchimento aplicada (transparente e conservadora):
+ * Regra de contagem (transparente; sem filtro de outlier por ora):
  *  - descarta linhas sem `Nr atendimento` numérico;
  *  - deduplica por `Nr atendimento`;
  *  - mantém apenas atendimentos cuja `Dt entrada` cai no dia de referência.
- * O bloco `_diag` reporta o que foi removido, para a operação validar/ajustar
- * o critério (ex.: excluir tempos absurdos) antes de fechar a regra.
+ * O bloco `_diag` reporta o descartado, para a operação decidir depois se
+ * algum filtro de outlier (ex.: tempos absurdos) será adotado.
  */
-export function calcularKpisPs(caminho: string, refIso: string): KpisPs {
-  const linhas = parseTasyTsv(caminho);
-
+export function calcularKpisPs(linhas: LinhaTasy[], refIso: string): KpisPs {
   const datasEntrada: Record<string, number> = {};
   const distintos = new Set<string>();
   const internados = new Set<string>();
@@ -51,13 +50,13 @@ export function calcularKpisPs(caminho: string, refIso: string): KpisPs {
   let foraDoDia = 0;
 
   for (const l of linhas) {
-    const nr = (l[COL_ATEND] ?? "").trim();
+    const nr = txt(l[COL_ATEND]);
     if (!/^\d+$/.test(nr)) {
       semNr++;
       continue;
     }
 
-    const diaEntrada = dataIsoBr(l[COL_ENTRADA]);
+    const diaEntrada = dataIso(l[COL_ENTRADA]);
     datasEntrada[diaEntrada ?? "(sem data)"] =
       (datasEntrada[diaEntrada ?? "(sem data)"] ?? 0) + 1;
 
@@ -67,7 +66,7 @@ export function calcularKpisPs(caminho: string, refIso: string): KpisPs {
     }
 
     distintos.add(nr);
-    if ((l[COL_ALOC_LEITO] ?? "").trim() !== "") internados.add(nr);
+    if (txt(l[COL_ALOC_LEITO]) !== "") internados.add(nr);
   }
 
   return {
