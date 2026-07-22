@@ -33,10 +33,35 @@ npm run load -- data/sample_data/new_sample --data-extracao 2026-07-22
 # 2) Daily report a partir do banco:
 npm run report -- --ref 2026-07-21 --hoje 2026-07-22            # calcula e grava o payload
 npm run report -- --ref 2026-07-21 --hoje 2026-07-22 --persist  # + grava em relatorios_diarios
+
+# 3) Backfill do histórico (habilita os forecasts por mediana):
+npm run backfill -- data/sample_data/load_history --inicio 2026-05-01 --fim 2026-07-21
 ```
 
 `--ref` = dia dos realizados (D-1); `--hoje` = dia da extração (D-0). O banco fica
 em `data/db/daily_report.sqlite` (gitignored); `--db <arquivo>` troca o caminho.
+
+### Backfill do histórico
+
+`npm run backfill` reconstrói `relatorios_diarios` para uma janela de dias a
+partir de uma **extração em massa** (relatórios cobrindo várias semanas em
+`data/sample_data/load_history/`, incluindo o censo retroativo 5079). Sem esse
+histórico o forecast por mediana retorna `null`; depois do backfill, o report
+diário passa a emitir os `*_frcst`. É idempotente (upsert por data+unidade).
+
+Diferenças de método do backfill vs. pipeline diário (**emenda documentada** —
+alinhar o diário ao censo é follow-up, exigiria o 5079 na extração diária):
+
+| | Pipeline diário | Backfill |
+|---|---|---|
+| pac-dia (ocupação) | snapshot `OCUPACAO` (~6h) | censo 5079, corte às 06:00 (entrada≤6h e saída>6h/vazia) |
+| `cirurgias_previstas` | mapa extraído em D-1 | **eletivas realizadas + reservas não-realizadas do mapa** (4718 = diferença agendado−realizado) |
+| `*_frcst` / `*_previstos` | calculados | `null` (linhas do backfill são os atuais, base do forecast) |
+
+O overlap (ex.: 07-21) é sobrescrito pelo backfill, deixando a série histórica
+consistente no método do censo. Como a ocupação do censo diverge um pouco do
+snapshot (ex.: 07-22 → 203/82 censo vs 196/88 snapshot), o valor *realizado* de
+pac-dia num dia pode diferir entre o payload diário e a linha de serving.
 
 ## Formato dos artefatos
 
@@ -119,10 +144,10 @@ agregados, sem PHI.
 
 ```
 src/
-  io/        leitura JSON dos relatórios (json.ts) + parsing de datas ISO (dates.ts)
+  io/        leitura JSON dos relatórios (json.ts) + datas ISO/BR + iterarDias (dates.ts)
   db/        banco SQLite: conn (schema), load (carga idempotente), repos (consultas)
   ref/       setores/leitos (fonte de verdade) + setoresExame (mapa SADT→setor)
-  sources/   1 parser por relatório (funções puras sobre registros do banco)
-  kpis/      computeUnidade (orquestra) + forecast (mediana do dia-da-semana)
-  cli/       load-extraction (carga) + build-report (report a partir do banco)
+  sources/   1 parser por relatório (funções puras); censo.ts = ocupação por censo (5079)
+  kpis/      computeUnidade (diário) + forecast (mediana) + backfill (KPIs de um dia histórico)
+  cli/       load-extraction (carga) + build-report (report) + backfill-history (histórico)
 ```

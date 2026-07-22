@@ -32,3 +32,17 @@ export const LEITOS_INTERNACAO = somaLeitos(GRUPO_INTERNACAO);
 
 /** Leitos operacionais de UTI (denominador de `tx_ocupacao_uti`). */
 export const LEITOS_UTI = somaLeitos(GRUPO_UTI);
+
+const GRUPO_POR_SETOR = new Map<string, number | null>(
+  SETORES.map((s) => [s.setor, s.id_grupo_setor]),
+);
+
+/**
+ * Grupo de internação de um setor pelo nome exato (3=enfermaria, 4=UTI, 0=
+ * descontinuado). `null` se o setor não está na tabela curada — ex.: setores de
+ * outra unidade ou fora de internação que aparecem no censo e devem ser ignorados.
+ */
+export function grupoDoSetor(nome: string | undefined | null): number | null {
+  if (!nome) return null;
+  return GRUPO_POR_SETOR.get(nome) ?? null;
+}

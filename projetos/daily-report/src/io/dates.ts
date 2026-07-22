@@ -31,6 +31,27 @@ export function noDia(valor: unknown, refIso: string): boolean {
   return dataIso(valor) === refIso;
 }
 
+/**
+ * Lista os dias `aaaa-mm-dd` de `inicioIso` até `fimIso` (ambos inclusive).
+ * Itera por componentes de data local (meio-dia, para evitar bordas de DST).
+ * Retorna vazio se as datas forem inválidas ou `fim < inicio`.
+ */
+export function iterarDias(inicioIso: string, fimIso: string): string[] {
+  const p = (n: number) => String(n).padStart(2, "0");
+  const fmt = (d: Date) => `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+  const [y0, m0, d0] = inicioIso.split("-").map(Number);
+  const [y1, m1, d1] = fimIso.split("-").map(Number);
+  if (!y0 || !m0 || !d0 || !y1 || !m1 || !d1) return [];
+  const atual = new Date(y0, m0 - 1, d0, 12, 0, 0);
+  const fim = new Date(y1, m1 - 1, d1, 12, 0, 0);
+  const dias: string[] = [];
+  while (atual.getTime() <= fim.getTime()) {
+    dias.push(fmt(atual));
+    atual.setDate(atual.getDate() + 1);
+  }
+  return dias;
+}
+
 /** Converte `dd/mm/aaaa[ HH:MM[:SS]]` em Date local, ou null. (Legado .xls.) */
 export function parseDataHoraBr(valor: string | undefined | null): Date | null {
   if (!valor) return null;
