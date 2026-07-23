@@ -41,22 +41,30 @@ tasy-client (Node)                              Power Automate Cloud Flow
 | 7 | Canal MVP | Teams (conector nativo). WhatsApp é fase 2 e depende de negociação corporativa (ver Fronteiras). |
 | 8 | Escopo | Regional consolidado — todas as unidades (Morumbi, Itaim, VNS, Jabaquara) numa entrega única. |
 | 9 | Forecast | Baseado no histórico da unidade. Backfill inicial: último ano, todas as unidades. Algoritmo a definir (ver Pendências), mas determinístico, simples e documentado. |
+| 10 | Escopo do payload | **Uma unidade por payload** (2026-07-22). Há um agente de síntese por unidade; o agente do VP Regional é generalização futura sobre o mesmo envelope (`unidades: []` + `regional: {}`). |
+| 11 | Papel do agente | **Só redator.** O agente (Copilot Studio) não consulta o SharePoint e não calcula: recebe variação, faixa do mesmo dia-da-semana, tendência, calendário, acumulado do mês e ranking de desvios prontos no payload. Descarta a alternativa de conectar a lista como *knowledge source* — busca semântica sobre linha numérica tem recall silenciosamente incompleto e não faz filtro exato por data. |
+| 12 | Fonte dos valores do payload | **Leitura de volta de `relatorios_diarios`**, não o objeto em memória do `computeUnidade`. Realizado e histórico precisam sair da mesma tabela e do mesmo método, senão todo delta compara métodos diferentes (censo × snapshot, ver `README.md`). Efeito colateral: retransmitir um dia passado é um comando só. |
 
 ## Contratos e detalhes de implementação
 
 ### Payload (evolução do schema)
 
-`daily_report_schema.json` descreve uma unidade. Para o regional, o payload vira:
+`daily_report_schema.json` descreve os KPIs de uma unidade-dia. O envelope transmitido está
+em **`payload_schema.json`** (contrato executável: `payloadUnidadeSchema` em
+`src/transmit/payload.ts`), com os blocos `periodo`, `unidade`, `calendario`, `kpis`,
+`comparacoes`, `destaques`, `mes`, `radar_hoje` e `qualidade`. ~11,5 KB / ~3.100 tokens por
+unidade — tamanho **fixo**, não cresce com o histórico acumulado.
 
-```
-{ data, unidades: [ { unidade, ...campos do schema, comparacoes: {...} } ], regional: {...} }
-```
+Quando o agente regional existir, o envelope vira
+`{ ..., unidades: [ {...} ], regional: {...} }`. O agregado regional é calculado no **Node**:
+taxa de ocupação regional = Σ pac-dia ÷ Σ leitos, **não** média das taxas.
 
-- Agregado regional é calculado no **Node**: taxa de ocupação regional = Σ pac-dia ÷ Σ leitos,
-  **não** média das taxas.
-- Bloco `comparacoes` por unidade e regional: D-1, média do mesmo dia da semana (últimas N
-  semanas), acumulado do mês vs forecast. É esse bloco que vai ao prompt — o AI Builder nunca
-  precisa reconstruir histórico da lista (resolve o limite de tokens/contexto).
+**Armadilha de datas (verificada no banco, `src/kpis/backfill.ts:19-29`):** na linha
+`data = D` de `relatorios_diarios`, os `*_previstos` são o esperado de **D**, mas os
+`*_frcst` são o esperado de **D+1**. Comparar o realizado de D contra o `*_frcst` da própria
+linha D compara com o dia seguinte — erro silencioso e grande. Por isso `comparacoes` usa
+`*_previstos` (mesma linha) ou o `*_frcst` da linha D−1, e os `*_frcst` da linha D viram o
+bloco `radar_hoje`.
 
 ### Fluxo Power Automate
 
@@ -106,5 +114,16 @@ tasy-client (Node)                              Power Automate Cloud Flow
 4. **Horário de corte**: a que horas os dados do dia anterior estão estáveis no TASY?
    Define o agendamento do job.
 5. **Destino no Teams**: canal de equipe vs chat em grupo; lista de destinatários.
-6. **Prompt da síntese**: estrutura, tom executivo (três pilares: QT/QP/RF), formato da
-   mensagem.
+6. ~~**Prompt da síntese**~~ **FECHADO (2026-07-22).** Ver `PROMPT_SINTESE_IA.md` (agente no
+   Copilot Studio, um por unidade) e `payload_schema.json`.
+7. **Endpoint do Power Automate** ainda não existe. `npm run transmit` roda ponta a ponta e
+   grava em disco; plugar é setar `DAILY_REPORT_ENDPOINT_URL` e `DAILY_REPORT_SHARED_SECRET`.
+8. **Divergência de realizados** entre o pipeline diário e a linha persistida de 21/07
+   (PS 276 × 308, RM 60 × 76). A parte de ocupação é a documentada no `README.md`
+   (snapshot × censo); PS e exames **não estão explicados**. Investigar antes do piloto — se
+   for método e não amostra, contamina toda comparação.
+9. **`metodo_ocupacao` não é rastreado por linha** em `relatorios_diarios`. Enquanto censo
+   (backfill) e snapshot (diário) convivem na janela de 10 semanas, a faixa histórica de
+   ocupação mistura métodos. Correção real: alinhar o diário ao censo.
+10. **Curadoria de `src/ref/feriados.json`** — municipais variam por unidade; conferir com
+   RH/administração.

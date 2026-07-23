@@ -72,6 +72,82 @@ export function upsertRelatorioDiario(
   return { acao: existe ? "atualizado" : "inserido" };
 }
 
+/** KPIs de UMA unidade-dia, ou null se o dia não foi computado. */
+export function relatorioDoDia(
+  db: Db,
+  idUnidade: number,
+  data: string,
+): RegistroDiario | null {
+  const linha = db
+    .prepare(
+      `SELECT data, id_unidade, dia_semana, kpis, capturado_em
+         FROM relatorios_diarios WHERE data = ? AND id_unidade = ?`,
+    )
+    .get(data, idUnidade) as
+    | { data: string; id_unidade: number; dia_semana: number; kpis: string; capturado_em: string }
+    | undefined;
+  if (!linha) return null;
+  return { ...linha, kpis: JSON.parse(linha.kpis) as UnidadeReport };
+}
+
+/**
+ * Últimos `n` dias CORRIDOS até `ateData` (inclusive), em ordem cronológica
+ * (mais antigo primeiro) — base da série de tendência curta. Dias sem linha no
+ * banco simplesmente não aparecem; quem consome trabalha com o que existe.
+ */
+export function ultimosNDias(
+  db: Db,
+  idUnidade: number,
+  ateData: string,
+  n: number,
+): RegistroDiario[] {
+  const linhas = db
+    .prepare(
+      `SELECT data, id_unidade, dia_semana, kpis, capturado_em
+         FROM relatorios_diarios
+        WHERE id_unidade = ? AND data <= ?
+        ORDER BY data DESC
+        LIMIT ?`,
+    )
+    .all(idUnidade, ateData, n) as {
+    data: string;
+    id_unidade: number;
+    dia_semana: number;
+    kpis: string;
+    capturado_em: string;
+  }[];
+  return linhas
+    .map((l) => ({ ...l, kpis: JSON.parse(l.kpis) as UnidadeReport }))
+    .reverse();
+}
+
+/**
+ * Todas as linhas do mês de `refIso`, do dia 1 até `refIso` (inclusive), em
+ * ordem cronológica. Base do acumulado do mês.
+ */
+export function diasDoMesAte(
+  db: Db,
+  idUnidade: number,
+  refIso: string,
+): RegistroDiario[] {
+  const primeiro = `${refIso.slice(0, 7)}-01`;
+  const linhas = db
+    .prepare(
+      `SELECT data, id_unidade, dia_semana, kpis, capturado_em
+         FROM relatorios_diarios
+        WHERE id_unidade = ? AND data BETWEEN ? AND ?
+        ORDER BY data ASC`,
+    )
+    .all(idUnidade, primeiro, refIso) as {
+    data: string;
+    id_unidade: number;
+    dia_semana: number;
+    kpis: string;
+    capturado_em: string;
+  }[];
+  return linhas.map((l) => ({ ...l, kpis: JSON.parse(l.kpis) as UnidadeReport }));
+}
+
 /**
  * Últimas `limite` ocorrências do MESMO dia-da-semana, anteriores a `antesDe`,
  * para uma unidade. Base da mediana do forecast. Mais recente primeiro.

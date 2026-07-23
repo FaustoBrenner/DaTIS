@@ -1,0 +1,973 @@
+{
+  "schema_version": "1.0.0",
+  "tipo": "daily_report_unidade",
+  "gerado_em": "2026-07-23T11:51:13.349Z",
+  "periodo": {
+    "data_ref": "2026-07-21",
+    "data_hoje": "2026-07-22",
+    "dia_semana": 2,
+    "dia_semana_nome": "terça-feira"
+  },
+  "unidade": {
+    "unidade": "Itaim",
+    "id_unidade": 14
+  },
+  "calendario": {
+    "ref_atipico": false,
+    "ref_descricao": "terça-feira, dia útil comum",
+    "hoje_descricao": "quarta-feira, dia útil comum",
+    "proximos_7d": [],
+    "emenda_a_frente": null
+  },
+  "kpis": {
+    "unidade": "Itaim",
+    "id_unidade": 14,
+    "cirurgias": 87,
+    "cirurgias_eletivas": 73,
+    "cirurgias_urgencia": 14,
+    "cirurgias_previstas": 75,
+    "tx_confirmacao_agenda_cirurgica": 0.9733,
+    "pac_dia_uni": 179,
+    "leitos_uni": 221,
+    "tx_ocupacao_uni": 0.81,
+    "pac_dia_uti": 76,
+    "leitos_uti": 91,
+    "tx_ocupacao_uti": 0.8352,
+    "atendimentos_ps": 308,
+    "internacoes_ps": 33,
+    "tx_internacao": 0.1071,
+    "atendimentos_cemed": 798,
+    "atendimentos_cemed_previstos": 716,
+    "tx_confirmacao_agenda_cemed": 1.1145,
+    "exames_eda": 38,
+    "exames_usg": 190,
+    "exames_cardio": 182,
+    "exames_tc": 164,
+    "exames_rm": 76,
+    "exames_eda_previstos": 49.5,
+    "exames_usg_previstos": 162.5,
+    "exames_cardio_previstos": 156,
+    "exames_tc_previstos": 191.5,
+    "exames_rm_previstos": 81.5,
+    "cirurgias_frcst": 111,
+    "pac_dia_uni_frcst": 193,
+    "pac_dia_uti_frcst": 79.5,
+    "atendimentos_ps_frcst": 323.5,
+    "atendimentos_cemed_frcst": 740,
+    "exames_eda_frcst": 54.5,
+    "exames_usg_frcst": 158,
+    "exames_cardio_frcst": 160.5,
+    "exames_tc_frcst": 170,
+    "exames_rm_frcst": 88.5
+  },
+  "comparacoes": {
+    "cirurgias": {
+      "valor": 87,
+      "esperado": 75,
+      "esperado_origem": "previstos",
+      "delta": 12,
+      "delta_pct": 0.16,
+      "delta_pp": null,
+      "d1": 87,
+      "delta_d1": 0,
+      "delta_d1_pp": null,
+      "faixa10": {
+        "mediana": 101,
+        "min": 92,
+        "max": 109,
+        "n": 10
+      },
+      "posicao": "abaixo_da_faixa",
+      "z_robusto": -1.72,
+      "tendencia_14d": {
+        "direcao": null,
+        "pontos_consecutivos": 0
+      },
+      "serie_14d": [
+        102,
+        102,
+        78,
+        51,
+        23,
+        106,
+        94,
+        112,
+        141,
+        135,
+        69,
+        25,
+        87,
+        87
+      ],
+      "peso": 10,
+      "score": 8.58,
+      "grupo": "cirurgia"
+    },
+    "cirurgias_eletivas": {
+      "valor": 73,
+      "esperado": 75,
+      "esperado_origem": "previstos",
+      "delta": -2,
+      "delta_pct": -0.0267,
+      "delta_pp": null,
+      "d1": 76,
+      "delta_d1": -3,
+      "delta_d1_pp": null,
+      "faixa10": {
+        "mediana": 83,
+        "min": 75,
+        "max": 94,
+        "n": 10
+      },
+      "posicao": "abaixo_da_faixa",
+      "z_robusto": -1.69,
+      "tendencia_14d": {
+        "direcao": null,
+        "pontos_consecutivos": 1
+      },
+      "serie_14d": [
+        86,
+        85,
+        70,
+        43,
+        12,
+        89,
+        84,
+        91,
+        130,
+        119,
+        59,
+        15,
+        76,
+        73
+      ],
+      "peso": 10,
+      "score": 8.43,
+      "grupo": "cirurgia"
+    },
+    "tx_confirmacao_agenda_cirurgica": {
+      "valor": 0.9733,
+      "esperado": null,
+      "esperado_origem": null,
+      "delta": null,
+      "delta_pct": null,
+      "delta_pp": null,
+      "d1": 0.9744,
+      "delta_d1": null,
+      "delta_d1_pp": -0.11,
+      "faixa10": {
+        "mediana": 0.9823,
+        "min": 0.9208,
+        "max": 1,
+        "n": 10
+      },
+      "posicao": "dentro_da_faixa",
+      "z_robusto": -0.51,
+      "tendencia_14d": {
+        "direcao": null,
+        "pontos_consecutivos": 1
+      },
+      "serie_14d": [
+        0.9149,
+        0.9444,
+        0.9333,
+        0.9556,
+        0.8571,
+        0.957,
+        0.9767,
+        0.9785,
+        0.9774,
+        0.9444,
+        0.8939,
+        0.8824,
+        0.9744,
+        0.9733
+      ],
+      "peso": 9,
+      "score": 2.31,
+      "grupo": "cirurgia"
+    },
+    "cirurgias_urgencia": {
+      "valor": 14,
+      "esperado": null,
+      "esperado_origem": null,
+      "delta": null,
+      "delta_pct": null,
+      "delta_pp": null,
+      "d1": 11,
+      "delta_d1": 3,
+      "delta_d1_pp": null,
+      "faixa10": {
+        "mediana": 15.5,
+        "min": 10,
+        "max": 21,
+        "n": 10
+      },
+      "posicao": "dentro_da_faixa",
+      "z_robusto": -0.4,
+      "tendencia_14d": {
+        "direcao": null,
+        "pontos_consecutivos": 2
+      },
+      "serie_14d": [
+        16,
+        17,
+        8,
+        8,
+        11,
+        17,
+        10,
+        21,
+        11,
+        16,
+        10,
+        10,
+        11,
+        14
+      ],
+      "peso": 8,
+      "score": 1.62,
+      "grupo": "cirurgia"
+    },
+    "tx_ocupacao_uti": {
+      "valor": 0.8352,
+      "esperado": 0.8956,
+      "esperado_origem": "derivado_leitos",
+      "delta": null,
+      "delta_pct": null,
+      "delta_pp": -6.04,
+      "d1": 0.7033,
+      "delta_d1": null,
+      "delta_d1_pp": 13.19,
+      "faixa10": {
+        "mediana": 0.8956,
+        "min": 0.7582,
+        "max": 0.9451,
+        "n": 10
+      },
+      "posicao": "dentro_da_faixa",
+      "z_robusto": -1.06,
+      "tendencia_14d": {
+        "direcao": null,
+        "pontos_consecutivos": 1
+      },
+      "serie_14d": [
+        0.8681,
+        0.8132,
+        0.7582,
+        0.7582,
+        0.8242,
+        0.7363,
+        0.8462,
+        0.8681,
+        0.9011,
+        0.9451,
+        0.8681,
+        0.7473,
+        0.7033,
+        0.8352
+      ],
+      "peso": 9,
+      "score": 4.77,
+      "grupo": "uti"
+    },
+    "pac_dia_uti": {
+      "valor": 76,
+      "esperado": 81.5,
+      "esperado_origem": "frcst_d-1",
+      "delta": -5.5,
+      "delta_pct": -0.0675,
+      "delta_pp": null,
+      "d1": 64,
+      "delta_d1": 12,
+      "delta_d1_pp": null,
+      "faixa10": {
+        "mediana": 81.5,
+        "min": 69,
+        "max": 86,
+        "n": 10
+      },
+      "posicao": "dentro_da_faixa",
+      "z_robusto": -1.06,
+      "tendencia_14d": {
+        "direcao": null,
+        "pontos_consecutivos": 1
+      },
+      "serie_14d": [
+        79,
+        74,
+        69,
+        69,
+        75,
+        67,
+        77,
+        79,
+        82,
+        86,
+        79,
+        68,
+        64,
+        76
+      ],
+      "peso": 9,
+      "score": 4.77,
+      "grupo": "uti"
+    },
+    "exames_rm": {
+      "valor": 76,
+      "esperado": 81.5,
+      "esperado_origem": "previstos",
+      "delta": -5.5,
+      "delta_pct": -0.0675,
+      "delta_pp": null,
+      "d1": 82,
+      "delta_d1": -6,
+      "delta_d1_pp": null,
+      "faixa10": {
+        "mediana": 81.5,
+        "min": 57,
+        "max": 95,
+        "n": 10
+      },
+      "posicao": "dentro_da_faixa",
+      "z_robusto": -0.74,
+      "tendencia_14d": {
+        "direcao": null,
+        "pontos_consecutivos": 1
+      },
+      "serie_14d": [
+        91,
+        57,
+        87,
+        65,
+        33,
+        50,
+        81,
+        83,
+        75,
+        86,
+        78,
+        38,
+        82,
+        76
+      ],
+      "peso": 8,
+      "score": 2.97,
+      "grupo": "exames"
+    },
+    "exames_eda": {
+      "valor": 38,
+      "esperado": 49.5,
+      "esperado_origem": "previstos",
+      "delta": -11.5,
+      "delta_pct": -0.2323,
+      "delta_pp": null,
+      "d1": 43,
+      "delta_d1": -5,
+      "delta_d1_pp": null,
+      "faixa10": {
+        "mediana": 49.5,
+        "min": 40,
+        "max": 72,
+        "n": 10
+      },
+      "posicao": "abaixo_da_faixa",
+      "z_robusto": -1.41,
+      "tendencia_14d": {
+        "direcao": null,
+        "pontos_consecutivos": 1
+      },
+      "serie_14d": [
+        51,
+        38,
+        74,
+        63,
+        30,
+        42,
+        49,
+        62,
+        54,
+        56,
+        73,
+        30,
+        43,
+        38
+      ],
+      "peso": 8,
+      "score": 5.64,
+      "grupo": "exames"
+    },
+    "tx_ocupacao_uni": {
+      "valor": 0.81,
+      "esperado": 0.7851,
+      "esperado_origem": "derivado_leitos",
+      "delta": null,
+      "delta_pct": null,
+      "delta_pp": 2.49,
+      "d1": 0.7195,
+      "delta_d1": null,
+      "delta_d1_pp": 9.05,
+      "faixa10": {
+        "mediana": 0.7851,
+        "min": 0.6742,
+        "max": 0.8507,
+        "n": 10
+      },
+      "posicao": "dentro_da_faixa",
+      "z_robusto": 0.44,
+      "tendencia_14d": {
+        "direcao": null,
+        "pontos_consecutivos": 2
+      },
+      "serie_14d": [
+        0.9005,
+        0.9005,
+        0.7511,
+        0.7014,
+        0.5294,
+        0.6471,
+        0.7738,
+        0.8869,
+        0.9638,
+        1.0226,
+        0.8688,
+        0.7149,
+        0.7195,
+        0.81
+      ],
+      "peso": 7,
+      "score": 1.53,
+      "grupo": "internacao"
+    },
+    "pac_dia_uni": {
+      "valor": 179,
+      "esperado": 173.5,
+      "esperado_origem": "frcst_d-1",
+      "delta": 5.5,
+      "delta_pct": 0.0317,
+      "delta_pp": null,
+      "d1": 159,
+      "delta_d1": 20,
+      "delta_d1_pp": null,
+      "faixa10": {
+        "mediana": 173.5,
+        "min": 149,
+        "max": 188,
+        "n": 10
+      },
+      "posicao": "dentro_da_faixa",
+      "z_robusto": 0.44,
+      "tendencia_14d": {
+        "direcao": null,
+        "pontos_consecutivos": 2
+      },
+      "serie_14d": [
+        199,
+        199,
+        166,
+        155,
+        117,
+        143,
+        171,
+        196,
+        213,
+        226,
+        192,
+        158,
+        159,
+        179
+      ],
+      "peso": 7,
+      "score": 1.53,
+      "grupo": "internacao"
+    },
+    "atendimentos_ps": {
+      "valor": 308,
+      "esperado": 351.5,
+      "esperado_origem": "frcst_d-1",
+      "delta": -43.5,
+      "delta_pct": -0.1238,
+      "delta_pp": null,
+      "d1": 359,
+      "delta_d1": -51,
+      "delta_d1_pp": null,
+      "faixa10": {
+        "mediana": 351.5,
+        "min": 268,
+        "max": 389,
+        "n": 10
+      },
+      "posicao": "dentro_da_faixa",
+      "z_robusto": -1.22,
+      "tendencia_14d": {
+        "direcao": null,
+        "pontos_consecutivos": 1
+      },
+      "serie_14d": [
+        278,
+        293,
+        247,
+        225,
+        241,
+        340,
+        268,
+        315,
+        316,
+        311,
+        227,
+        210,
+        359,
+        308
+      ],
+      "peso": 6,
+      "score": 3.67,
+      "grupo": "ps"
+    },
+    "internacoes_ps": {
+      "valor": 33,
+      "esperado": null,
+      "esperado_origem": null,
+      "delta": null,
+      "delta_pct": null,
+      "delta_pp": null,
+      "d1": 39,
+      "delta_d1": -6,
+      "delta_d1_pp": null,
+      "faixa10": {
+        "mediana": 36,
+        "min": 23,
+        "max": 46,
+        "n": 10
+      },
+      "posicao": "dentro_da_faixa",
+      "z_robusto": -0.58,
+      "tendencia_14d": {
+        "direcao": null,
+        "pontos_consecutivos": 1
+      },
+      "serie_14d": [
+        27,
+        21,
+        24,
+        16,
+        26,
+        44,
+        27,
+        39,
+        32,
+        31,
+        31,
+        17,
+        39,
+        33
+      ],
+      "peso": 6,
+      "score": 1.73,
+      "grupo": "ps"
+    },
+    "tx_internacao": {
+      "valor": 0.1071,
+      "esperado": null,
+      "esperado_origem": null,
+      "delta": null,
+      "delta_pct": null,
+      "delta_pp": null,
+      "d1": 0.1086,
+      "delta_d1": null,
+      "delta_d1_pp": -0.15,
+      "faixa10": {
+        "mediana": 0.1026,
+        "min": 0.0703,
+        "max": 0.1322,
+        "n": 10
+      },
+      "posicao": "dentro_da_faixa",
+      "z_robusto": 0.85,
+      "tendencia_14d": {
+        "direcao": null,
+        "pontos_consecutivos": 1
+      },
+      "serie_14d": [
+        0.0971,
+        0.0717,
+        0.0972,
+        0.0711,
+        0.1079,
+        0.1294,
+        0.1007,
+        0.1238,
+        0.1013,
+        0.0997,
+        0.1366,
+        0.081,
+        0.1086,
+        0.1071
+      ],
+      "peso": 6,
+      "score": 2.56,
+      "grupo": "ps"
+    },
+    "atendimentos_cemed": {
+      "valor": 798,
+      "esperado": 716,
+      "esperado_origem": "previstos",
+      "delta": 82,
+      "delta_pct": 0.1145,
+      "delta_pp": null,
+      "d1": 805,
+      "delta_d1": -7,
+      "delta_d1_pp": null,
+      "faixa10": {
+        "mediana": 716,
+        "min": 679,
+        "max": 754,
+        "n": 10
+      },
+      "posicao": "acima_da_faixa",
+      "z_robusto": 2.21,
+      "tendencia_14d": {
+        "direcao": null,
+        "pontos_consecutivos": 1
+      },
+      "serie_14d": [
+        749,
+        4,
+        538,
+        215,
+        1,
+        779,
+        750,
+        831,
+        755,
+        677,
+        194,
+        1,
+        805,
+        798
+      ],
+      "peso": 5,
+      "score": 5.53,
+      "grupo": "cemed"
+    },
+    "tx_confirmacao_agenda_cemed": {
+      "valor": 1.1145,
+      "esperado": null,
+      "esperado_origem": null,
+      "delta": null,
+      "delta_pct": null,
+      "delta_pp": null,
+      "d1": 0.992,
+      "delta_d1": null,
+      "delta_d1_pp": 12.25,
+      "faixa10": {
+        "mediana": 1.0302,
+        "min": 0.9604,
+        "max": 1.071,
+        "n": 10
+      },
+      "posicao": "acima_da_faixa",
+      "z_robusto": 2.31,
+      "tendencia_14d": {
+        "direcao": null,
+        "pontos_consecutivos": 2
+      },
+      "serie_14d": [
+        1.0163,
+        0.0056,
+        0.8054,
+        0.8793,
+        0.9477,
+        1.0608,
+        1.123,
+        1.0559,
+        1.0135,
+        0.8238,
+        0.992,
+        1.1145
+      ],
+      "peso": 5,
+      "score": 5.78,
+      "grupo": "cemed"
+    },
+    "exames_tc": {
+      "valor": 164,
+      "esperado": 191.5,
+      "esperado_origem": "previstos",
+      "delta": -27.5,
+      "delta_pct": -0.1436,
+      "delta_pp": null,
+      "d1": 225,
+      "delta_d1": -61,
+      "delta_d1_pp": null,
+      "faixa10": {
+        "mediana": 191.5,
+        "min": 151,
+        "max": 227,
+        "n": 10
+      },
+      "posicao": "dentro_da_faixa",
+      "z_robusto": -1.37,
+      "tendencia_14d": {
+        "direcao": null,
+        "pontos_consecutivos": 1
+      },
+      "serie_14d": [
+        148,
+        132,
+        157,
+        153,
+        114,
+        194,
+        151,
+        173,
+        167,
+        169,
+        134,
+        134,
+        225,
+        164
+      ],
+      "peso": 3,
+      "score": 2.06,
+      "grupo": "exames"
+    },
+    "exames_usg": {
+      "valor": 190,
+      "esperado": 162.5,
+      "esperado_origem": "previstos",
+      "delta": 27.5,
+      "delta_pct": 0.1692,
+      "delta_pp": null,
+      "d1": 162,
+      "delta_d1": 28,
+      "delta_d1_pp": null,
+      "faixa10": {
+        "mediana": 162.5,
+        "min": 138,
+        "max": 208,
+        "n": 10
+      },
+      "posicao": "dentro_da_faixa",
+      "z_robusto": 1.12,
+      "tendencia_14d": {
+        "direcao": null,
+        "pontos_consecutivos": 2
+      },
+      "serie_14d": [
+        149,
+        65,
+        92,
+        93,
+        52,
+        183,
+        208,
+        168,
+        162,
+        130,
+        80,
+        45,
+        162,
+        190
+      ],
+      "peso": 3,
+      "score": 1.69,
+      "grupo": "exames"
+    },
+    "exames_cardio": {
+      "valor": 182,
+      "esperado": 156,
+      "esperado_origem": "previstos",
+      "delta": 26,
+      "delta_pct": 0.1667,
+      "delta_pp": null,
+      "d1": 157,
+      "delta_d1": 25,
+      "delta_d1_pp": null,
+      "faixa10": {
+        "mediana": 156,
+        "min": 133,
+        "max": 195,
+        "n": 10
+      },
+      "posicao": "dentro_da_faixa",
+      "z_robusto": 1.59,
+      "tendencia_14d": {
+        "direcao": null,
+        "pontos_consecutivos": 2
+      },
+      "serie_14d": [
+        154,
+        58,
+        141,
+        85,
+        46,
+        192,
+        156,
+        176,
+        170,
+        149,
+        91,
+        54,
+        157,
+        182
+      ],
+      "peso": 3,
+      "score": 2.39,
+      "grupo": "exames"
+    }
+  },
+  "destaques": [
+    {
+      "rank": 1,
+      "kpi": "cirurgias",
+      "grupo": "cirurgia",
+      "direcao": "negativa",
+      "score": 8.58
+    },
+    {
+      "rank": 2,
+      "kpi": "tx_confirmacao_agenda_cemed",
+      "grupo": "cemed",
+      "direcao": "positiva",
+      "score": 5.78
+    },
+    {
+      "rank": 3,
+      "kpi": "exames_eda",
+      "grupo": "exames",
+      "direcao": "negativa",
+      "score": 5.64
+    },
+    {
+      "rank": 4,
+      "kpi": "tx_ocupacao_uti",
+      "grupo": "uti",
+      "direcao": "negativa",
+      "score": 4.77
+    },
+    {
+      "rank": 5,
+      "kpi": "atendimentos_ps",
+      "grupo": "ps",
+      "direcao": "negativa",
+      "score": 3.67
+    }
+  ],
+  "mes": {
+    "dias_computados": 21,
+    "cirurgias": {
+      "acumulado": 1858,
+      "esperado": 1643,
+      "delta_pct": 0.1309
+    },
+    "cirurgias_eletivas": {
+      "acumulado": 1572,
+      "esperado": 1643,
+      "delta_pct": -0.0432
+    },
+    "cirurgias_urgencia": {
+      "acumulado": 286,
+      "esperado": null,
+      "delta_pct": null
+    },
+    "pac_dia_uti": {
+      "acumulado": 1582,
+      "esperado": null,
+      "delta_pct": null
+    },
+    "exames_rm": {
+      "acumulado": 1471,
+      "esperado": 1612,
+      "delta_pct": -0.0875
+    },
+    "exames_eda": {
+      "acumulado": 1030,
+      "esperado": 1202,
+      "delta_pct": -0.1431
+    },
+    "pac_dia_uni": {
+      "acumulado": 3677,
+      "esperado": null,
+      "delta_pct": null
+    },
+    "atendimentos_ps": {
+      "acumulado": 6258,
+      "esperado": null,
+      "delta_pct": null
+    },
+    "internacoes_ps": {
+      "acumulado": 630,
+      "esperado": null,
+      "delta_pct": null
+    },
+    "atendimentos_cemed": {
+      "acumulado": 11253,
+      "esperado": 11661,
+      "delta_pct": -0.035
+    },
+    "exames_tc": {
+      "acumulado": 3535,
+      "esperado": 3344.5,
+      "delta_pct": 0.057
+    },
+    "exames_usg": {
+      "acumulado": 2672,
+      "esperado": 2800.5,
+      "delta_pct": -0.0459
+    },
+    "exames_cardio": {
+      "acumulado": 2770,
+      "esperado": 2740,
+      "delta_pct": 0.0109
+    }
+  },
+  "radar_hoje": {
+    "cirurgias": {
+      "esperado": 111,
+      "base": "mapa_cirurgico_d0",
+      "mediana_mesmo_dia_semana": 87
+    },
+    "pac_dia_uni": {
+      "esperado": 193,
+      "base": "mediana_10_mesmo_dia_semana"
+    },
+    "pac_dia_uti": {
+      "esperado": 79.5,
+      "base": "mediana_10_mesmo_dia_semana"
+    },
+    "atendimentos_ps": {
+      "esperado": 323.5,
+      "base": "mediana_10_mesmo_dia_semana"
+    },
+    "atendimentos_cemed": {
+      "esperado": 740,
+      "base": "mediana_10_mesmo_dia_semana"
+    },
+    "exames_eda": {
+      "esperado": 54.5,
+      "base": "mediana_10_mesmo_dia_semana"
+    },
+    "exames_usg": {
+      "esperado": 158,
+      "base": "mediana_10_mesmo_dia_semana"
+    },
+    "exames_cardio": {
+      "esperado": 160.5,
+      "base": "mediana_10_mesmo_dia_semana"
+    },
+    "exames_tc": {
+      "esperado": 170,
+      "base": "mediana_10_mesmo_dia_semana"
+    },
+    "exames_rm": {
+      "esperado": 88.5,
+      "base": "mediana_10_mesmo_dia_semana"
+    }
+  },
+  "qualidade": {
+    "campos_null_relevantes": [],
+    "suspeitas": [],
+    "capturado_em": "2026-07-22T20:16:56.234Z",
+    "metodo_ocupacao": "nao_rastreado"
+  }
+}

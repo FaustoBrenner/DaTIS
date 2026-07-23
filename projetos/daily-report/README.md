@@ -14,7 +14,10 @@ Rotina de extração (agendada, D-0 de manhã):
   tasy_client → JSON → npm run load → SQLite (registros brutos + metadados)
 
 Rotina de daily report (D-0, reporta D-1):
-  SQLite → npm run report → KPIs (valida schema) → payload JSON → [HTTP Power Automate]
+  SQLite → npm run report → KPIs (valida schema) → relatorios_diarios
+
+Rotina de transmissão (D-0, após o report):
+  relatorios_diarios → npm run transmit → comparações/tendências → POST no Power Automate
 ```
 
 Separar as duas rotinas com o banco no meio **preserva o dado-fonte** (colunas
@@ -36,6 +39,10 @@ npm run report -- --ref 2026-07-21 --hoje 2026-07-22 --persist  # + grava em rel
 
 # 3) Backfill do histórico (habilita os forecasts por mediana):
 npm run backfill -- data/sample_data/load_history --inicio 2026-05-01 --fim 2026-07-21
+
+# 4) Payload para o agente de síntese (comparações + tendências + POST):
+npm run transmit -- --ref 2026-07-21 --hoje 2026-07-22 --dry-run   # só monta e grava
+npm run transmit -- --ref 2026-07-21 --hoje 2026-07-22             # + POST no endpoint
 ```
 
 `--ref` = dia dos realizados (D-1); `--hoje` = dia da extração (D-0). O banco fica
@@ -148,6 +155,36 @@ src/
   db/        banco SQLite: conn (schema), load (carga idempotente), repos (consultas)
   ref/       setores/leitos (fonte de verdade) + setoresExame (mapa SADT→setor)
   sources/   1 parser por relatório (funções puras); censo.ts = ocupação por censo (5079)
-  kpis/      computeUnidade (diário) + forecast (mediana) + backfill (KPIs de um dia histórico)
+  kpis/      computeUnidade (diário) + forecast (mediana) + backfill (KPIs de um dia
+             histórico) + comparacoes (variação/faixa/tendência/ranking do payload)
+  transmit/  payload (envelope + validação zod) + post (POST com retry no Power Automate)
   cli/       load-extraction (carga) + build-report (report) + backfill-history (histórico)
+             + transmit (payload → endpoint)
 ```
+
+## Transmissão ao agente de síntese
+
+`npm run transmit` monta o envelope descrito em **`payload_schema.json`** e o envia ao
+endpoint HTTP do Power Automate, que o entrega ao agente no Copilot Studio. O agente é **só
+redator**: variação, faixa do mesmo dia-da-semana, tendência, calendário, acumulado do mês e
+ranking de desvios chegam prontos (`PROMPT_SINTESE_IA.md`).
+
+Os valores vêm de `relatorios_diarios`, **não** do cálculo em memória: realizado e histórico
+precisam sair da mesma tabela e do mesmo método.
+
+> **Armadilha de datas.** Na linha `data = D`, os `*_previstos` são o esperado de **D**, mas
+> os `*_frcst` são o esperado de **D+1** (ver `kpis/backfill.ts`). O esperado do dia sai dos
+> `*_previstos` (ou do `*_frcst` da linha D−1, para pac-dia e PS); os `*_frcst` da linha D
+> viram o bloco `radar_hoje`.
+
+`payload_exemplo.json` (raiz) é uma transmissão real do Itaim — extração de 22/07 sobre o
+dia-ref 21/07 — gerada por `--dry-run`. Serve de referência para montar o fluxo e o agente.
+É versionado porque só carrega KPIs agregados, sem PHI. Regerar com:
+
+```bash
+npm run transmit -- --ref 2026-07-21 --hoje 2026-07-22 --dry-run --out payload_exemplo.json
+```
+
+Configuração (env vars, nunca no repositório): `DAILY_REPORT_ENDPOINT_URL` e
+`DAILY_REPORT_SHARED_SECRET`. Sem a URL, o envio é um no-op logado e o payload fica só em
+disco — a rotina roda ponta a ponta antes do endpoint existir.

@@ -1,0 +1,121 @@
+{
+  "_sobre": "Envelope transmitido ao endpoint HTTP do Power Automate, que o entrega ao agente de síntese no Copilot Studio. Escopo: UMA unidade (há um agente por unidade). Contrato executável = `payloadUnidadeSchema` (zod) em src/transmit/payload.ts; este arquivo é a versão legível para quem monta o fluxo e o prompt.",
+  "_regras": [
+    "Taxas trafegam como FRAÇÃO DECIMAL (0.8352 = 83,52%), nunca em %.",
+    "Diferença entre duas taxas é em pontos percentuais (delta_pp), nunca em delta_pct.",
+    "null = 'não foi possível derivar', NUNCA zero. Não calcular variação contra null.",
+    "delta_pct é null quando o denominador é 0 ou null.",
+    "O agente não calcula nem projeta: tudo aqui já vem pronto (ARQUITETURA.md, decisão #6)."
+  ],
+
+  "schema_version": { "type": "string", "nota": "semver; o agente recusa major diferente do que conhece" },
+  "tipo": { "type": "string", "const": "daily_report_unidade" },
+  "gerado_em": { "type": "string", "format": "date-time" },
+
+  "periodo": {
+    "data_ref": { "type": "string", "format": "date", "nota": "D-1: o dia dos realizados, sobre o qual o relatório fala" },
+    "data_hoje": { "type": "string", "format": "date", "nota": "D-0: o dia em que o relatório é lido" },
+    "dia_semana": { "type": "integer", "nota": "0=domingo .. 6=sábado" },
+    "dia_semana_nome": { "type": "string" }
+  },
+
+  "unidade": {
+    "unidade": { "type": "string" },
+    "id_unidade": { "type": "integer" }
+  },
+
+  "calendario": {
+    "_sobre": "Determinístico, de src/ref/feriados.json. O agente NUNCA decide se um dia é feriado.",
+    "ref_atipico": { "type": "boolean", "nota": "true se data_ref é feriado, fim de semana ou emenda. Quando true, o forecast (mediana de dias-da-semana comuns) SUPERESTIMA o esperado: o desvio é calendário, não gestão." },
+    "ref_descricao": { "type": "string" },
+    "hoje_descricao": { "type": "string" },
+    "proximos_7d": { "type": "array", "itens": { "data": "date", "nome": "string", "tipo": "nacional|estadual|municipal" } },
+    "emenda_a_frente": { "type": ["object", "null"], "itens": { "data": "date", "descricao": "string" } }
+  },
+
+  "kpis": {
+    "_sobre": "Objeto completo de daily_report_schema.json (realizados de data_ref + previstos + frcst). Lido de relatorios_diarios, não recalculado.",
+    "_atencao": "Na linha data=D, os *_previstos são o esperado de D, mas os *_frcst são o esperado de D+1. Por isso o esperado do dia está em `comparacoes`, e os *_frcst aparecem em `radar_hoje`."
+  },
+
+  "comparacoes": {
+    "_sobre": "Um objeto por KPI comparado (18 campos, ver src/ref/pesos.ts). É aqui que o agente lê variação, histórico e tendência — sem calcular nada.",
+    "<kpi>": {
+      "valor": { "type": ["number", "null"], "nota": "realizado em data_ref" },
+      "esperado": { "type": ["number", "null"] },
+      "esperado_origem": {
+        "type": ["string", "null"],
+        "enum": ["previstos", "frcst_d-1", "mediana_calculada", "derivado_leitos"],
+        "nota": "'previstos' = agenda/mapa do próprio dia (mede EXECUÇÃO da agenda). 'frcst_d-1'/'mediana_calculada' = mediana das 10 ocorrências do mesmo dia-da-semana (mede DESVIO DE TENDÊNCIA). São leituras diferentes: a redação precisa distinguir."
+      },
+      "delta": { "type": ["number", "null"], "nota": "valor − esperado (só volumes)" },
+      "delta_pct": { "type": ["number", "null"], "nota": "fração: -0.176 = 17,6% abaixo (só volumes)" },
+      "delta_pp": { "type": ["number", "null"], "nota": "pontos percentuais (só taxas)" },
+      "d1": { "type": ["number", "null"], "nota": "mesmo KPI no dia anterior" },
+      "delta_d1": { "type": ["number", "null"] },
+      "delta_d1_pp": { "type": ["number", "null"] },
+      "faixa10": {
+        "mediana": { "type": ["number", "null"] },
+        "min": { "type": ["number", "null"] },
+        "max": { "type": ["number", "null"] },
+        "n": { "type": "integer", "nota": "quantas ocorrências do mesmo dia-da-semana sustentam a faixa; n<10 = histórico curto, citar com cautela" }
+      },
+      "posicao": {
+        "type": ["string", "null"],
+        "enum": ["abaixo_da_faixa", "dentro_da_faixa", "acima_da_faixa"],
+        "nota": "posição contra o min/max das 10 ocorrências. É o campo que sustenta o cruzamento de indicadores (ex.: urgência acima da faixa + eletivas abaixo da faixa = bloco canibalizado)."
+      },
+      "z_robusto": { "type": ["number", "null"], "nota": "(valor − mediana) / (MAD × 1.4826). |z| > 2 é extremo; MAD em vez de sigma porque a série tem outliers estruturais (domingo)." },
+      "tendencia_14d": {
+        "direcao": { "type": ["string", "null"], "enum": ["alta", "queda"], "nota": "null quando não há 3+ movimentos consecutivos no mesmo sentido — oscilação não é tendência" },
+        "pontos_consecutivos": { "type": "integer" }
+      },
+      "serie_14d": { "type": "array", "nota": "últimos 14 dias corridos, cronológico (mais antigo primeiro)" },
+      "peso": { "type": "number", "nota": "importância do KPI para a diretoria (src/ref/pesos.ts)" },
+      "score": { "type": ["number", "null"], "nota": "peso × min(|z_robusto|/2, 1.5)" },
+      "grupo": { "type": "string", "enum": ["cirurgia", "uti", "internacao", "ps", "cemed", "exames"] }
+    }
+  },
+
+  "destaques": {
+    "_sobre": "Top 5 desvios por score, no máximo UM por grupo. É a ordem de prioridade sugerida das pílulas — o agente pode discordar, mas precisa de motivo.",
+    "itens": {
+      "rank": { "type": "integer" },
+      "kpi": { "type": "string" },
+      "grupo": { "type": "string" },
+      "direcao": { "type": "string", "enum": ["positiva", "negativa"] },
+      "score": { "type": "number" }
+    }
+  },
+
+  "mes": {
+    "_sobre": "Acumulado do mês corrente até data_ref, contra a soma dos previstos do mesmo período. Só volumes (taxa não soma).",
+    "dias_computados": { "type": "integer" },
+    "<kpi>": {
+      "acumulado": { "type": ["number", "null"] },
+      "esperado": { "type": ["number", "null"] },
+      "delta_pct": { "type": ["number", "null"] }
+    }
+  },
+
+  "radar_hoje": {
+    "_sobre": "O esperado de HOJE (data_hoje) — base do bloco prospectivo do relatório.",
+    "<kpi>": {
+      "esperado": { "type": ["number", "null"] },
+      "base": {
+        "type": "string",
+        "enum": ["mapa_cirurgico_d0", "mediana_10_mesmo_dia_semana"],
+        "nota": "'mapa_cirurgico_d0' (só cirurgias) é a AGENDA MONTADA para hoje, contada no mapa extraído hoje — não é mediana histórica. Redação correta: 'há N cirurgias mapeadas para hoje', nunca 'previsão histórica'."
+      },
+      "mediana_mesmo_dia_semana": { "type": ["number", "null"], "nota": "só em cirurgias: mediana das reservas do mesmo dia-da-semana, para dar escala à agenda de hoje" }
+    }
+  },
+
+  "qualidade": {
+    "_sobre": "O que o agente NÃO deve tratar como fato operacional.",
+    "campos_null_relevantes": { "type": "array", "nota": "KPIs sem valor derivável no dia — omitir a pílula ou citar na seção de qualidade" },
+    "suspeitas": { "type": "array", "nota": "desvio grande demais ou taxa impossível = provável falha de extração. Desligado em dia atípico (num feriado a queda é o calendário, não a extração)." },
+    "capturado_em": { "type": "string", "format": "date-time" },
+    "metodo_ocupacao": { "type": "string", "nota": "PENDENTE: ainda 'nao_rastreado'. O histórico do backfill usa censo (corte 06:00) e o pipeline diário usa snapshot — enquanto os dois convivem na janela de 10 semanas, não fazer pílula de ocupação baseada só em z_robusto." }
+  }
+}

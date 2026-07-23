@@ -12,6 +12,7 @@
     "load": "tsx src/cli/load-extraction.ts",
     "backfill": "tsx src/cli/backfill-history.ts",
     "report": "tsx src/cli/build-report.ts",
+    "transmit": "tsx src/cli/transmit.ts",
     "export": "tsx src/cli/export-xlsx.ts"
   },
   "dependencies": {
