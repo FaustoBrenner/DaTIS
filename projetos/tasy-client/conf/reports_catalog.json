@@ -1102,6 +1102,83 @@
           "type": "string"
         }
       }
+    },
+    {
+      "key": "cate_5079",
+      "title": "RDSL - Pacientes internados - Censo retroativo",
+      "type": "CATE",
+      "code": 5079,
+      "setor": "Internação",
+      "assunto": "ocupação",
+      "perfil": null,
+      "params_schema": {
+        "fileExportType": {
+          "type": "string",
+          "required": true,
+          "allowed": ["XLS", "CSV", "PDF"]
+        },
+        "_nrSeqSchematicsFeature": {
+          "type": "int",
+          "required": false
+        },
+        "ADVF_DIMENSIONS": {
+          "type": "json",
+          "required": false
+        },
+        "DT_INICIO": {
+          "type": "instant",
+          "required": true
+        },
+        "DT_FIM": {
+          "type": "instant",
+          "required": true
+        }
+      },
+      "outputs": {
+        "file_prefix": "RDSL_CENSO_RETROATIVO",
+        "ext": "xls"
+      },
+      "columns_schema": {
+        
+      }
+    },
+    {
+      "key": "cate_2070",
+      "title": "RDSL - Relatório Sintético Agenda Cirúrgica",
+      "type": "CATE",
+      "code": 2070,
+      "setor": "Centro Cirúrgico",
+      "assunto": "mapa_cirurgico",
+      "perfil": null,
+      "params_schema": {
+        "DT_FINAL": {
+          "type": "instant",
+          "required": true
+        },
+        "_nrSeqSchematicsFeature": {
+          "type": "int",
+          "required": false
+        },
+        "ADVF_DIMENSIONS": {
+          "type": "json",
+          "required": false
+        },
+        "DT_INICIAL": {
+          "type": "instant",
+          "required": true
+        },
+        "CD_ESTAB": {
+          "type": "int",
+          "required": true
+        }
+      },
+      "outputs": {
+        "file_prefix": "RDSL_AGENDA_CIR",
+        "ext": "xls"
+      },
+      "columns_schema": {
+        
+      }
     }
   ]
 }

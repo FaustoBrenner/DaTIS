@@ -559,6 +559,8 @@ Três cuidados no wrapper (nenhum exige mudança no core):
 - **Cookies de infra:** `TASYAPPSERVER` (afinidade), `JSESSIONID`.
 
 Detalhes completos do protocolo XHR: [`full_request_workflow.md`](./full_request_workflow.md).
+**Catálogo de endpoints** (contexto, auth, input/output com exemplo por endpoint):
+[`ENDPOINTS.md`](./ENDPOINTS.md).
 
 ---
 
@@ -629,6 +631,7 @@ tasy-client/
 ├── dist/                      # build (tsc)
 ├── README.md                  # visão rápida / quick start
 ├── documentation.md           # este documento
+├── ENDPOINTS.md               # catálogo de endpoints (input/output por endpoint)
 ├── full_request_workflow.md   # protocolo XHR detalhado
 └── tasy_client_rebuild.md     # notas de reconstrução
 ```

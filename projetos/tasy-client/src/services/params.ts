@@ -57,6 +57,12 @@ export interface TasyInstant {
 }
 
 /**
+ * Formato ISO UTC aceito pelo TASY: "YYYY-MM-DDThh:mm:ss[.mmm]Z".
+ * Ex.: "2026-07-23T03:00:00.000Z". A fração de segundos é opcional.
+ */
+const ISO_INSTANT_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{1,3})?Z$/;
+
+/**
  * Codifica um valor conforme o schema do catálogo:
  *   instant -> objeto java.time.Instant
  *   int     -> number
@@ -74,8 +80,16 @@ export function encodeParam(name: string, value: unknown, schema: ParamSchema = 
 
   switch (type) {
     case "instant": {
-      if (typeof value !== "string" || !value.endsWith("Z")) {
-        throw new Error(`Param ${name}: esperado ISO UTC terminado em 'Z' para 'instant'`);
+      if (typeof value !== "string" || !ISO_INSTANT_RE.test(value)) {
+        // Erro comum: token de data não resolvido (grafia errada, ex.: "@date_ref_T00ZZ").
+        // Sinalizamos aqui, no cliente, em vez de deixar o servidor recusar o ReportsParam.
+        const hint = typeof value === "string" && value.startsWith("@")
+          ? " (token de data não resolvido — verifique a grafia, ex.: @date_ref_T00Z)"
+          : "";
+        throw new Error(
+          `Param ${name}: valor '${String(value)}' não é um instante ISO UTC válido ` +
+            `(esperado YYYY-MM-DDThh:mm:ss[.mmm]Z)${hint}`,
+        );
       }
       const instant: TasyInstant = { "@class": "java.time.Instant", type: "INSTANT", value };
       return instant;

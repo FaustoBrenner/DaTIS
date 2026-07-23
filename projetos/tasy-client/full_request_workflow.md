@@ -120,3 +120,51 @@ de montar o schema à mão.
 
 Retorna o binário. O "`.xls`" do TASY é, na prática, **TSV em UTF-16-BE** (a conversão para CSV é
 responsabilidade do consumidor, fora do escopo desta biblioteca).
+
+## 9. Ocupação hospitalar — `POST /schematic/atepacfn/cpanels/18273/datasource`
+
+Família **esquemática** (`schematic/cpanel`), fora de `/service` e `/report`. Painel de ocupação
+de leitos (função `atepacfn`, feature-code `44`). Só bearer — **não exige XSRF nem os headers de
+feature** (testado: bearer-only = 200 idêntico). Corpo é JSON objeto (não o array `{tipo,valor}`).
+Parâmetro-chave: `parameters.CD_ESTAB_OCUPACAO` (código do estabelecimento).
+
+```
+POST /TasyAppServer/resources/schematic/atepacfn/cpanels/18273/datasource?dictionaryCode=372558
+Authorization: BEARER <JWT>
+Content-Type: application/json;charset=UTF-8
+
+{"actionName":"OccupancyAction","activationType":"NamedAction","filterValues":{"NR_SEQ_AGRUPAMENTO":"0","IE_TODOS_ESTAB":"N","_filterCode":418873,"_dimensionValues":{}},"legendDefinition":null,"pageBegin":1,"parameters":{"_schematicObjCode":18273,"NR_SEQ_AGRUPAMENTO":"0","IE_TODOS_ESTAB":null,"_filterCode":418873,"_dimensionValues":{},"CD_ESTAB_OCUPACAO":14},"recordsPerPage":1000,"sortAscending":true}
+```
+
+Resposta: `dados.linhasResultSet[]` = uma linha **agregada por setor** (sem PII). Exemplo de input
+e output completos, campos-chave e sonda: ver [`ENDPOINTS.md` §10](./ENDPOINTS.md#10-ocupação-hospitalar).
+
+## 10. Prontuário (2 passos) — `/service/*`, dado clínico (PHI)
+
+Fluxo por **atendimento** (`nrAtendimento`), família `/service/*` (só bearer, sem XSRF). É **PHI** —
+regras de LGPD se aplicam (minimização, log de acesso). Dois passos:
+
+**10.1 — cabeçalho/ativar atendimento** `POST /service/WPaciente/wPacienteLerAtendimentoGWT`
+
+```
+POST /TasyAppServer/resources/service/WPaciente/wPacienteLerAtendimentoGWT
+Authorization: BEARER <JWT>
+Content-Type: application/json;charset=UTF-8
+
+[{"tipo":"WPacienteAtivarVO","valor":{"nrAtendimento":55859107}},{"@class":"br.com.philips.tasy.dto.shared.AccessControlResult","accessType":"RW","externalAccess":false,"tabParentCode":0}]
+```
+
+Retorna `dados.valores` = mapa plano (~100 campos) do paciente/encontro.
+
+**10.2 — evoluções clínicas** `POST /service/DataSourceProvider/getDataSource`
+
+Corpo `RequisicaoDataSource` (`actionName:"ActivateClinicalNotesAction"`, tabela `EVOLUCAO_PACIENTE`,
+feature-code `281`), janela `DT_INICIO`/`DT_FIM` (wrapper `java.time.Instant`), paginado
+(`page`/`qtRegistrosPagina`=500). Retorna `dados.linhasResultSet[]` = 1 linha por evolução, com o
+texto livre em `DS_EVOLUCAO`. Corpo extenso — ver a sonda `discovery/probe6-prontuario.mjs`.
+
+Exemplos completos de input e output (sintéticos), campos-chave e nota de LGPD: ver
+[`ENDPOINTS.md` §11–12](./ENDPOINTS.md#11-prontuário--cabeçalho-do-paciente).
+
+> **Nota:** os tokens/cookies acima são ilustrativos. Capturas reais (com JWT/PII) ficam só em
+> `discovery/*` (gitignored), nunca neste arquivo.

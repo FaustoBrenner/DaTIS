@@ -8,8 +8,9 @@ logs/
 raw/
 out/
 
-# Capturas de discovery (contêm tokens e dados reais)
+# Capturas e probes de discovery (contêm tokens e dados reais de paciente)
 discovery/*.json
+discovery/*.mjs
 *.har
 
 # Python legado
