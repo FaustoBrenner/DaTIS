@@ -16,6 +16,7 @@
 import { TasySession } from "./core/session.js";
 import { ReportsService } from "./services/reports.js";
 import { EstablishmentService } from "./services/establishment.js";
+import { OccupancyService } from "./services/occupancy.js";
 import type { TasyConfig } from "./core/types.js";
 
 /** Fachada que agrega a sessão e os serviços de alto nível. */
@@ -23,11 +24,13 @@ export class TasyClient {
   readonly session: TasySession;
   readonly reports: ReportsService;
   readonly establishment: EstablishmentService;
+  readonly occupancy: OccupancyService;
 
   constructor(config: TasyConfig) {
     this.session = new TasySession(config);
     this.reports = new ReportsService(this.session);
     this.establishment = new EstablishmentService(this.session);
+    this.occupancy = new OccupancyService(this.session);
   }
 }
 
@@ -57,6 +60,8 @@ export type {
 } from "./services/reports.js";
 export { EstablishmentService } from "./services/establishment.js";
 export type { Establishment } from "./services/establishment.js";
+export { OccupancyService } from "./services/occupancy.js";
+export type { OccupancyRow, OccupancyResult, OccupancyOptions } from "./services/occupancy.js";
 export { resolveToken, encodeParam, parseDateRef } from "./services/params.js";
 export type { ParamSchema, TasyInstant } from "./services/params.js";
 
