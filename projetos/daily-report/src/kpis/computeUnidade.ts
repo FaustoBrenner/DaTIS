@@ -5,7 +5,7 @@ import { unidadeReportSchema, taxa, type UnidadeReport } from "../types.js";
 import { calcularKpisPs } from "../sources/trackingPs.js";
 import { calcularKpisCirurgias } from "../sources/cirurgias.js";
 import { calcularKpisCemed } from "../sources/trackingCemed.js";
-import { calcularKpisMapaCir } from "../sources/mapaCir.js";
+import { calcularKpisAgendaCir } from "../sources/agendaCir.js";
 import { calcularKpisExames } from "../sources/exames.js";
 import { calcularKpisOcupacao } from "../sources/ocupacao.js";
 import { calcularForecasts } from "./forecast.js";
@@ -16,7 +16,7 @@ export const RELATORIOS = {
   cirurgias: "3136",
   cemed: "3523",
   exames: "4317",
-  mapaCir: "4718",
+  agendaCir: "2070",
   ocupacao: "OCUPACAO",
 } as const;
 
@@ -25,7 +25,7 @@ export interface JanelaReport {
   refIso: string;
   /**
    * Dia da extração corrente (D-0, hoje). As extrações de "realizados" e a
-   * ocupação são lidas por esta data; o mapa cirúrgico de D-0 dá `cirurgias_frcst`.
+   * ocupação são lidas por esta data; a agenda cirúrgica (2070) de D-0 dá `cirurgias_frcst`.
    */
   extracaoHoje: string;
 }
@@ -41,8 +41,8 @@ export interface ResultadoUnidade {
  * Modelo temporal (ver ARQUITETURA.md):
  *  - Realizados (PS, cirurgias, CEMED, exames) e ocupação vêm da extração de
  *    HOJE (D-0), que traz os eventos de ONTEM (D-1) — filtrados por `refIso`.
- *  - `cirurgias_previstas` (D-1) vem do MAPA extraído em D-1 (persistido ontem).
- *  - `cirurgias_frcst` (D-0) vem do MAPA extraído hoje (contagem total).
+ *  - `cirurgias_previstas` (D-1) vem da AGENDA (2070) extraída em D-1 (persistida ontem).
+ *  - `cirurgias_frcst` (D-0) vem da AGENDA (2070) extraída hoje (reservas eletivas).
  *  - demais `*_frcst`: mediana do mesmo dia-da-semana (últimas 10 semanas).
  *
  * Campos deixados em `null` (não deriváveis das extrações atuais):
@@ -66,10 +66,11 @@ export function computeUnidade(
   const exames = calcularKpisExames(reg(RELATORIOS.exames, extracaoHoje), refIso);
   const ocup = calcularKpisOcupacao(reg(RELATORIOS.ocupacao, extracaoHoje));
 
-  // Mapa cirúrgico: previstas de D-1 (mapa de ontem) e frcst de D-0 (mapa de hoje).
-  const mapaOntem = calcularKpisMapaCir(reg(RELATORIOS.mapaCir, refIso), refIso);
-  const mapaHoje = calcularKpisMapaCir(reg(RELATORIOS.mapaCir, extracaoHoje), extracaoHoje);
-  const previstasOntem = mapaOntem._diag.linhas_brutas > 0 ? mapaOntem.cirurgias_previstas : null;
+  // Agenda cirúrgica (2070): previstas de D-1 (agenda de ontem) e frcst de D-0
+  // (agenda de hoje) — em ambos, reservas com Carater Cirurgia = Eletiva.
+  const agendaOntem = calcularKpisAgendaCir(reg(RELATORIOS.agendaCir, refIso), refIso);
+  const agendaHoje = calcularKpisAgendaCir(reg(RELATORIOS.agendaCir, extracaoHoje), extracaoHoje);
+  const previstasOntem = agendaOntem._diag.linhas_brutas > 0 ? agendaOntem.cirurgias_previstas : null;
 
   // Forecasts por mediana do dia-da-semana. O alvo é HOJE (D-0 = extracaoHoje):
   // os campos *_frcst são "previsão para hoje", então usamos o dia-da-semana de
@@ -119,7 +120,7 @@ export function computeUnidade(
     exames_tc_previstos: prev.valores.exames_tc,
     exames_rm_previstos: prev.valores.exames_rm,
 
-    cirurgias_frcst: mapaHoje._diag.linhas_brutas > 0 ? mapaHoje.cirurgias_previstas : null,
+    cirurgias_frcst: agendaHoje._diag.linhas_brutas > 0 ? agendaHoje.cirurgias_previstas : null,
     pac_dia_uni_frcst: frcst.valores.pac_dia_uni,
     pac_dia_uti_frcst: frcst.valores.pac_dia_uti,
     atendimentos_ps_frcst: frcst.valores.atendimentos_ps,
@@ -142,8 +143,8 @@ export function computeUnidade(
       cirurgias: cir._diag,
       cemed: cemed._diag,
       exames: exames._diag,
-      mapa_cir_previstas: mapaOntem._diag,
-      mapa_cir_frcst: mapaHoje._diag,
+      agenda_cir_previstas: agendaOntem._diag,
+      agenda_cir_frcst: agendaHoje._diag,
       ocupacao: ocup._diag,
       forecast: frcst._diag,
     },

@@ -32,7 +32,7 @@ export interface KpisCirurgias {
 }
 
 /** Normaliza o caráter para o bucket do schema (eletiva | urgencia | outro). */
-function bucketCarater(valor: string): "eletiva" | "urgencia" | "outro" {
+export function bucketCarater(valor: string): "eletiva" | "urgencia" | "outro" {
   const c = valor
     .normalize("NFD")
     .replace(/[̀-ͯ]/g, "")

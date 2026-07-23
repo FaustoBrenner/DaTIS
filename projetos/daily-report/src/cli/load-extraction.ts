@@ -20,15 +20,35 @@ import { RELATORIOS } from "../kpis/computeUnidade.js";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const RAIZ = path.resolve(__dirname, "../..");
 
-/** Arquivo de cada relatório na pasta de extração. */
+/**
+ * Arquivo de cada relatório na pasta de extração (padrão da nova extração,
+ * 2026-07-23). A ocupação tem sufixo variável (estab + data), então é resolvida
+ * por PREFIXO em `resolverArquivo`, não por nome fixo.
+ */
 const ARQUIVOS: Record<string, string> = {
-  [RELATORIOS.ps]: "2432_TRACKING_PS.json",
-  [RELATORIOS.cirurgias]: "3136_CIRURGIAS_REALIZADAS.json",
-  [RELATORIOS.cemed]: "3523_TRACKING_CEMED.json",
+  [RELATORIOS.ps]: "2432_PS.json",
+  [RELATORIOS.cirurgias]: "3136_CIR_REALIZADAS.json",
+  [RELATORIOS.cemed]: "3523_CEMED.json",
   [RELATORIOS.exames]: "4317_GESTAO_EXAMES.json",
-  [RELATORIOS.mapaCir]: "4718_MAPA_CIR.json",
-  [RELATORIOS.ocupacao]: "OCUPACAO.json",
+  [RELATORIOS.agendaCir]: "2070_AGENDA_CIR.json",
+  [RELATORIOS.ocupacao]: "OCUPACAO",
 };
+
+/**
+ * Resolve o caminho do arquivo de um relatório na pasta. Ocupação vem com nome
+ * variável (`OCUPACAO_ESTAB14_<data>.json`), então casa por prefixo `OCUPACAO`;
+ * os demais têm nome fixo.
+ */
+function resolverArquivo(pasta: string, relatorio: string, nome: string): string | undefined {
+  if (relatorio === RELATORIOS.ocupacao) {
+    const achado = fs
+      .readdirSync(pasta)
+      .find((f) => f.startsWith("OCUPACAO") && f.toLowerCase().endsWith(".json"));
+    return achado ? path.join(pasta, achado) : undefined;
+  }
+  const caminho = path.join(pasta, nome);
+  return fs.existsSync(caminho) ? caminho : undefined;
+}
 
 function opt(args: string[], nome: string): string | undefined {
   const i = args.indexOf(nome);
@@ -45,7 +65,8 @@ function hojeIso(): string {
 function lerRegistros(relatorio: string, caminho: string): LinhaTasy[] {
   if (relatorio === RELATORIOS.ocupacao) {
     const doc = JSON.parse(fs.readFileSync(caminho, "utf8"));
-    return (doc?.dados?.linhasResultSet ?? []) as LinhaTasy[];
+    // Envelope novo: `doc.rows`; legado: `doc.dados.linhasResultSet`.
+    return (doc?.rows ?? doc?.dados?.linhasResultSet ?? []) as LinhaTasy[];
   }
   return parseTasyJson(caminho);
 }
@@ -70,8 +91,8 @@ console.log("-".repeat(60));
 
 let total = 0;
 for (const [relatorio, arquivo] of Object.entries(ARQUIVOS)) {
-  const caminho = path.join(pasta, arquivo);
-  if (!fs.existsSync(caminho)) {
+  const caminho = resolverArquivo(pasta, relatorio, arquivo);
+  if (!caminho) {
     console.warn(`  [skip] ${arquivo} — não encontrado`);
     continue;
   }
@@ -80,7 +101,7 @@ for (const [relatorio, arquivo] of Object.entries(ARQUIVOS)) {
     relatorio,
     idUnidade,
     dataExtracao,
-    arquivo,
+    arquivo: path.basename(caminho),
     registros,
   });
   total += r.linhas;

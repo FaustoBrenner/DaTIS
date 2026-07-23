@@ -19,7 +19,7 @@ export type Db = DatabaseSync;
 const DDL = `
 CREATE TABLE IF NOT EXISTS extracoes (
   id            INTEGER PRIMARY KEY AUTOINCREMENT,
-  relatorio     TEXT    NOT NULL,   -- '2432' | '3136' | '3523' | '4317' | '4718' | 'OCUPACAO'
+  relatorio     TEXT    NOT NULL,   -- '2432' | '3136' | '3523' | '4317' | '2070' | '4718' (histórico) | 'OCUPACAO'
   id_unidade    INTEGER NOT NULL,
   data_extracao TEXT    NOT NULL,   -- dia em que a extração rodou (aaaa-mm-dd)
   extraido_em   TEXT    NOT NULL,   -- timestamp ISO completo

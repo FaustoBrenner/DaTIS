@@ -11,7 +11,7 @@ import type { LinhaTasy } from "../io/json.js";
  */
 
 export interface EntradaExtracao {
-  /** Código do relatório: '2432' | '3136' | '3523' | '4317' | '4718' | 'OCUPACAO'. */
+  /** Código do relatório: '2432' | '3136' | '3523' | '4317' | '2070' | '4718' (histórico) | 'OCUPACAO'. */
   relatorio: string;
   idUnidade: number;
   /** Dia em que a extração rodou (aaaa-mm-dd). */
