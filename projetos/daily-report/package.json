@@ -13,10 +13,12 @@
     "backfill": "tsx src/cli/backfill-history.ts",
     "report": "tsx src/cli/build-report.ts",
     "transmit": "tsx src/cli/transmit.ts",
-    "export": "tsx src/cli/export-xlsx.ts"
+    "export": "tsx src/cli/export-xlsx.ts",
+    "daily": "tsx src/cli/run-daily.ts"
   },
   "dependencies": {
     "exceljs": "^4.4.0",
+    "tasy-client": "file:../tasy-client",
     "zod": "^3.23.8"
   },
   "devDependencies": {
