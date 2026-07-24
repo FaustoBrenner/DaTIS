@@ -1,6 +1,7 @@
 import type { UnidadeConfig } from "../config.js";
 import type { Db } from "../db/conn.js";
-import { registrosDaExtracao } from "../db/repos.js";
+import { registrosDaExtracao, relatorioDoDia } from "../db/repos.js";
+import { diaAnterior } from "../io/dates.js";
 import { unidadeReportSchema, taxa, type UnidadeReport } from "../types.js";
 import { calcularKpisPs } from "../sources/trackingPs.js";
 import { calcularKpisCirurgias } from "../sources/cirurgias.js";
@@ -70,7 +71,23 @@ export function computeUnidade(
   // (agenda de hoje) — em ambos, reservas com Carater Cirurgia = Eletiva.
   const agendaOntem = calcularKpisAgendaCir(reg(RELATORIOS.agendaCir, refIso), refIso);
   const agendaHoje = calcularKpisAgendaCir(reg(RELATORIOS.agendaCir, extracaoHoje), extracaoHoje);
-  const previstasOntem = agendaOntem._diag.linhas_brutas > 0 ? agendaOntem.cirurgias_previstas : null;
+
+  // `cirurgias_previstas` de D-1: preferimos o 2070 bruto de D-1 (extraído ontem).
+  // Quando ele não está no banco (bootstrap / extração pulada), aplicamos a
+  // identidade `previsto[D-1] = frcst[D-2]`: o `cirurgias_frcst` já gravado na
+  // linha de D-2 em `relatorios_diarios` (habilitado pelo backfill/histórico) É
+  // a previsão para D-1. Assim `tx_confirmacao_agenda_cirurgica` sai já no 1º
+  // dia, sem esperar a próxima extração do 2070.
+  let previstasOntem: number | null =
+    agendaOntem._diag.linhas_brutas > 0 ? agendaOntem.cirurgias_previstas : null;
+  let previstasFonte = previstasOntem != null ? "2070_D-1" : "indisponivel";
+  if (previstasOntem == null) {
+    const anterior = relatorioDoDia(db, id, diaAnterior(refIso));
+    if (anterior?.kpis.cirurgias_frcst != null) {
+      previstasOntem = anterior.kpis.cirurgias_frcst;
+      previstasFonte = "frcst_D-2";
+    }
+  }
 
   // Forecasts por mediana do dia-da-semana. O alvo é HOJE (D-0 = extracaoHoje):
   // os campos *_frcst são "previsão para hoje", então usamos o dia-da-semana de
@@ -145,6 +162,7 @@ export function computeUnidade(
       exames: exames._diag,
       agenda_cir_previstas: agendaOntem._diag,
       agenda_cir_frcst: agendaHoje._diag,
+      previstas_fonte: previstasFonte,
       ocupacao: ocup._diag,
       forecast: frcst._diag,
     },

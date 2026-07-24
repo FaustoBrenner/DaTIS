@@ -1,6 +1,12 @@
 node_modules/
 dist/
 
+# Variáveis de ambiente/segredos (a URL SAS do Power Automate embute o `sig`).
+.env
+.env.*
+*.env
+environment.env
+
 # Extrações brutas do TASY e histórico contêm dados operacionais/PHI — nunca versionar.
 data/sample_data/
 data/history/

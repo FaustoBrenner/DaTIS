@@ -10,14 +10,14 @@
       "key": "ps_tracking",
       "args": {
         "DT_INICIAL": "2026-05-01T03:00:00.000Z",
-        "DT_FINAL": "2026-07-22T03:00:00.000Z"
+        "DT_FINAL": "2026-07-23T03:00:00.000Z"
       }
     },
     {
       "key": "cate_3523",
       "args": {
         "DT_INICIAL": "2026-05-01T03:00:00.000Z",
-        "DT_FINAL": "2026-07-23T03:00:00.000Z",
+        "DT_FINAL": "2026-07-24T03:00:00.000Z",
         "CD_ESTABELECIMENTO": "14"
       }
     },
@@ -25,14 +25,14 @@
       "key": "cate_3136",
       "args": {
         "DT_INICIO": "2026-05-01T03:00:00.000Z",
-        "DT_FIM": "2026-07-22T03:00:00.000Z"
+        "DT_FIM": "2026-07-23T03:00:00.000Z"
       }
     },
     {
       "key": "cate_4317",
       "args": {
         "DT_INICIO": "2026-05-01T03:00:00.000Z",
-        "DT_FINAL": "2026-07-23T03:00:00.000Z",
+        "DT_FINAL": "2026-07-24T03:00:00.000Z",
         "CD_ESTABELECIMENTO_COR": "14"
       }
     },
@@ -41,7 +41,7 @@
       "args": {
         "CD_ESTABELECIMENTO_P": 14,
         "DT_INICIAL_P": "2026-05-01T03:00:00.000Z",
-        "DT_FINAL_P": "2026-07-23T03:00:00.000Z"
+        "DT_FINAL_P": "2026-07-24T03:00:00.000Z"
       }
     },
     {
@@ -50,7 +50,7 @@
         "_nrSeqSchematicsFeature": 1254,
         "ADVF_DIMENSIONS": [],
         "DT_INICIO": "2026-05-01T03:00:00.000Z",
-        "DT_FIM": "2026-07-22T03:00:00.000Z"
+        "DT_FIM": "2026-07-23T03:00:00.000Z"
       }
     }
   ]

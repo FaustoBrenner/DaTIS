@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { ITAIM } from "../config.js";
+import { carregarEnv } from "../io/env.js";
 import { abrirDb } from "../db/conn.js";
 import { DiaNaoComputadoError, montarPayload } from "../transmit/payload.js";
 import { enviar } from "../transmit/post.js";
@@ -21,6 +22,10 @@ import { enviar } from "../transmit/post.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const RAIZ = path.resolve(__dirname, "../..");
+
+// Carrega o .env do projeto (endpoint/segredo). O ambiente do SO tem precedência.
+const { carregadas } = carregarEnv(path.join(RAIZ, "environment.env"));
+if (carregadas.length) console.log(`[env] environment.env: ${carregadas.join(", ")}`);
 
 function opt(args: string[], nome: string): string | undefined {
   const i = args.indexOf(nome);
@@ -101,5 +106,8 @@ switch (resultado.status) {
     console.error(
       `[transmit] FALHOU após ${resultado.tentativas} tentativa(s): ${resultado.erro}`,
     );
-    process.exit(2);
+    // Saída graciosa (não `process.exit`): evita a corrida com o teardown dos
+    // sockets do fetch, que dispara assertion do libuv no Windows.
+    process.exitCode = 2;
+    break;
 }

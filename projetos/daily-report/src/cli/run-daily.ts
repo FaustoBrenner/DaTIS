@@ -6,6 +6,7 @@ import { TasyClient, buildSpecs, parseDateRef } from "tasy-client";
 import type { CatalogFile, ReportSpec } from "tasy-client";
 
 import { ITAIM } from "../config.js";
+import { carregarEnv } from "../io/env.js";
 import { abrirDb } from "../db/conn.js";
 import { carregarExtracao } from "../db/load.js";
 import { upsertRelatorioDiario } from "../db/repos.js";
@@ -110,6 +111,11 @@ function gravarSnapshot(hoje: string, relatorio: string, registros: LinhaTasy[])
 }
 
 async function main(): Promise<number> {
+  // Carrega o .env do projeto (endpoint/segredo) antes de qualquer leitura de
+  // env. O ambiente do SO tem precedência (não sobrescreve TASY_USER/PASS etc.).
+  const { carregadas } = carregarEnv(path.join(RAIZ, "environment.env"));
+  if (carregadas.length) console.log(`[env] environment.env: ${carregadas.join(", ")}`);
+
   const args = process.argv.slice(2);
   const dryRun = args.includes("--dry-run");
   const semExtracao = args.includes("--no-extract");
@@ -275,9 +281,15 @@ async function main(): Promise<number> {
   return degradado ? 1 : 0;
 }
 
+// Saída graciosa: definimos `exitCode` e deixamos o event loop drenar em vez de
+// `process.exit()`. O `process.exit()` abrupto após o POST corre com o teardown
+// dos sockets keep-alive do fetch/undici e dispara uma assertion do libuv no
+// Windows (async.c) — exit code inválido que quebraria o contrato do Task Scheduler.
 main()
-  .then((code) => process.exit(code))
+  .then((code) => {
+    process.exitCode = code;
+  })
   .catch((err) => {
     console.error("[daily] erro fatal:", err);
-    process.exit(2);
+    process.exitCode = 2;
   });

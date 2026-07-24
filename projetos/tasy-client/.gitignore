@@ -3,10 +3,12 @@
 .env.*
 conf/storage_state.json
 
-# Saídas de execução
+# Saídas de execução (extrações contêm PHI: nomes, CPF — nunca versionar)
 logs/
 raw/
 out/
+data/
+*.env
 
 # Capturas e probes de discovery (contêm tokens e dados reais de paciente)
 discovery/*.json
